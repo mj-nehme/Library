@@ -1,0 +1,12 @@
+# Database configuration
+[Database]
+DB_HOST = "localhost"
+DB_PORT = 5432
+DB_NAME = "Library"
+DB_USERNAME = "postgres"
+DB_PASSWORD = "postgres"
+DB_SSL_MODE = "disable"
+
+# Server configuration
+[Server]
+SERVER_PORT = 8090

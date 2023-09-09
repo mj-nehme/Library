@@ -1,0 +1,146 @@
+[
+    {
+        "title": "The Great Gatsby",
+        "author": "F. Scott Fitzgerald",
+        "published": "1925-04-10",
+        "edition": 1,
+        "description": "A classic novel depicting the glamour and excess of the Jazz Age.",
+        "genre_name": "Fiction"
+    },
+    {
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee",
+        "published": "1960-07-11",
+        "edition": 2,
+        "description": "A novel set in the American Deep South that addresses issues of racism and social injustice.",
+        "genre_name": "Fiction"
+    },
+    {
+        "title": "1984",
+        "author": "George Orwell",
+        "published": "1949-06-08",
+        "edition": 1,
+        "description": "A dystopian novel exploring themes of totalitarianism and government surveillance.",
+        "genre_name": "Science Fiction"
+    },
+    {
+        "title": "Pride and Prejudice",
+        "author": "Jane Austen",
+        "published": "1813-01-28",
+        "edition": 5,
+        "description": "A romantic novel following the love story of Elizabeth Bennet and Mr. Darcy.",
+        "genre_name": "Romance"
+    },
+    {
+        "title": "Moby-Dick",
+        "author": "Herman Melville",
+        "published": "1851-10-18",
+        "edition": 1,
+        "description": "A novel about the obsessive quest of Captain Ahab to hunt down the white whale Moby Dick.",
+        "genre_name": "Adventure"
+    },
+    {
+        "title": "The Catcher in the Rye",
+        "author": "J.D. Salinger",
+        "published": "2023-07-27",
+        "edition": 3,
+        "description": "A coming-of-age novel following the journey of Holden Caulfield in New York City.",
+        "genre_name": "Fiction"
+    },
+    {
+        "title": "One Hundred Years of Solitude",
+        "author": "Gabriel Garcia Marquez",
+        "published": "1967-05-30",
+        "edition": 1,
+        "description": "A novel depicting the multi-generational story of the Buendia family in Macondo.",
+        "genre_name": "Magical Realism"
+    },
+    {
+        "title": "The Lord of the Rings",
+        "author": "J.R.R. Tolkien",
+        "published": "1954-07-29",
+        "edition": 2,
+        "description": "An epic high-fantasy novel chronicling the quest to destroy the One Ring.",
+        "genre_name": "Fantasy"
+    },
+    {
+        "title": "Crime and Punishment",
+        "author": "Fyodor Dostoevsky",
+        "published": "1866-01-01",
+        "edition": 1,
+        "description": "A psychological novel exploring the mental anguish and moral dilemmas of Raskolnikov.",
+        "genre_name": "Psychological Fiction"
+    },
+    {
+        "title": "The Hobbit",
+        "author": "J.R.R. Tolkien",
+        "published": "1937-09-21",
+        "edition": 1,
+        "description": "A fantasy novel about the journey of Bilbo Baggins and his quest to reclaim treasure.",
+        "genre_name": "Fantasy"
+    },
+    {
+        "title": "The Picture of Dorian Gray",
+        "author": "Oscar Wilde",
+        "published": "1890-07-01",
+        "edition": 1,
+        "description": "A novel exploring the corrupting influence of hedonism and aestheticism.",
+        "genre_name": "Gothic Fiction"
+    },
+    {
+        "title": "Frankenstein",
+        "author": "Mary Shelley",
+        "published": "1818-01-01",
+        "edition": 1,
+        "description": "A Gothic science fiction novel depicting the creation of a monster.",
+        "genre_name": "Gothic Fiction"
+    },
+    {
+        "title": "Alice's Adventures in Wonderland",
+        "author": "Lewis Carroll",
+        "published": "1865-11-26",
+        "edition": 1,
+        "description": "A fantasy novel about a young girl's adventures in a magical world.",
+        "genre_name": "Fantasy"
+    },
+    {
+        "title": "The Adventures of Huckleberry Finn",
+        "author": "Mark Twain",
+        "published": "1884-12-10",
+        "edition": 1,
+        "description": "A novel following the journey of Huck Finn and Jim down the Mississippi River.",
+        "genre_name": "Adventure"
+    },
+    {
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "published": "1932-03-23",
+        "edition": 1,
+        "description": "A dystopian novel exploring a futuristic society's dark and oppressive aspects.",
+        "genre_name": "Science Fiction"
+    },
+    {
+        "title": "The Scarlet Letter",
+        "author": "Nathaniel Hawthorne",
+        "published": "1850-03-16",
+        "edition": 1,
+        "description": "A novel set in 17th-century Puritan Boston, exploring themes of sin and redemption.",
+        "genre_name": "Fiction"
+    },
+    {
+        "title": "The Brothers Karamazov",
+        "author": "Fyodor Dostoevsky",
+        "published": "1880-11-01",
+        "edition": 1,
+        "description": "A philosophical novel delving into the moral struggles and relationships of the Karamazov family.",
+        "genre_name": "Philosophical Fiction"
+    },
+    {
+        "title": "The War of the Worlds",
+        "author": "H.G. Wells",
+        "published": "1898-01-01",
+        "edition": 1,
+        "description": "A science fiction novel depicting an alien invasion of Earth.",
+        "genre_name": "Science Fiction"
+    }
+]
