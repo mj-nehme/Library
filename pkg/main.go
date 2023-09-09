@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"library/api"
 	"library/config"
 	"library/core"
 	"time"
@@ -36,6 +37,9 @@ func main() {
 	}
 
 	// Start the API server
-	//router := api.SetupRouter()
-	//api.StartServer(cfg.Server.Port, router)
+	router := api.SetupRouter(db)
+	err = api.StartServer(ctx, cfg.Server.Port, router)
+	if err != nil {
+		slog.Error("Failed to start the API server")
+	}
 }
