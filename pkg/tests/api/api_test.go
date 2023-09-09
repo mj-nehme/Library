@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"library/tests"
+	"library/tests/api"
 	"net/http"
 	"testing"
 
@@ -17,7 +18,8 @@ func TestHealthCheckHandler(t *testing.T) {
 	method := "GET"
 	url := "/health"
 	var body []byte = nil
-	response := sendRequest(t, router, method, url, body)
+	response, err := api.SendRequest(router, method, url, body)
+	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, response.Code, "Unexpected status code for health check")
 }
@@ -39,7 +41,8 @@ func TestVersionHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/api/v%s/", tc.Version)
 			var body []byte = nil
-			response := sendRequest(t, router, method, url, body)
+			response, err := api.SendRequest(router, method, url, body)
+			assert.NoError(t, err)
 
 			assert.Equal(t, tc.Expectation, response.Code, "Unexpected status code for version: %s", tc.Version)
 		})
@@ -54,7 +57,8 @@ func TestWelcomePageHandler(t *testing.T) {
 	method := "GET"
 	url := "/"
 	var body []byte = nil
-	response := sendRequest(t, router, method, url, body)
+	response, err := api.SendRequest(router, method, url, body)
+	assert.NoError(t, err)
 
 	// Check the response status code
 	assert.Equal(t, http.StatusOK, response.Code, "Unexpected status code")
@@ -64,7 +68,7 @@ func TestWelcomePageHandler(t *testing.T) {
 
 	// Read the response body
 	var responseBody map[string]interface{}
-	err := json.NewDecoder(response.Body).Decode(&responseBody)
+	err = json.NewDecoder(response.Body).Decode(&responseBody)
 	assert.NoError(t, err)
 
 	// Verify the response body contains the expected message

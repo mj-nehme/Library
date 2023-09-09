@@ -1,14 +1,12 @@
-package api_test
+package api
 
 import (
 	"bytes"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -17,7 +15,7 @@ const (
 	v1Prefix     = apiPath + "/" + apiVersionV1
 )
 
-func sendRequest(t *testing.T, router *gin.Engine, method string, path string, requestBody []byte) *httptest.ResponseRecorder {
+func SendRequest(router *gin.Engine, method string, path string, requestBody []byte) (*httptest.ResponseRecorder, error) {
 	var body io.Reader
 	if requestBody == nil {
 		body = nil
@@ -25,7 +23,9 @@ func sendRequest(t *testing.T, router *gin.Engine, method string, path string, r
 		body = bytes.NewBuffer(requestBody)
 	}
 	request, err := http.NewRequest(method, path, body)
-	assert.NoError(t, err)
+	if err != nil {
+		return nil, err
+	}
 
 	request.Header.Set("Accept-Version", apiVersionV1)
 	request.Header.Set("Content-Type", "application/json")
@@ -36,12 +36,11 @@ func sendRequest(t *testing.T, router *gin.Engine, method string, path string, r
 	// Serve the request using the router
 	router.ServeHTTP(response, request)
 
-	return response
+	return response, nil
 }
 
-func sendRequestV1(t *testing.T, router *gin.Engine, method string, path string, requestBody []byte) *httptest.ResponseRecorder {
+func SendRequestV1(router *gin.Engine, method string, path string, requestBody []byte) (*httptest.ResponseRecorder, error) {
 	url := v1Prefix + path
-	response := sendRequest(t, router, method, url, requestBody)
 
-	return response
+	return SendRequest(router, method, url, requestBody)
 }

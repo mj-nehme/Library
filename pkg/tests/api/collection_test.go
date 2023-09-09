@@ -51,7 +51,7 @@ func TestAddCollectionHandler(t *testing.T) {
 			method := "POST"
 			url := "/collections"
 			var body []byte = payload
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -78,7 +78,7 @@ func TestGetCollectionHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample collection for testing
-	collectionSample, err := core.LoadSampleCollection()
+	collectionSample, err := api.LoadSampleCollection()
 	assert.NoError(t, err)
 	collection, err := core.AddCollection(collectionSample.Name)
 	assert.NoError(t, err)
@@ -109,7 +109,7 @@ func TestGetCollectionHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/collections/%d", tc.CollectionID)
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -135,7 +135,7 @@ func TestListCollectionsHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	collectionSamples, err := core.LoadListOfCollectionSamples()
+	collectionSamples, err := api.LoadListOfCollectionSamples()
 	assert.NoError(t, err)
 	collectionSampleNames := []string{}
 	for _, cs := range collectionSamples {
@@ -169,7 +169,7 @@ func TestListCollectionsHandler(t *testing.T) {
 			method := "GET"
 			url := "/collections"
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -205,7 +205,7 @@ func TestUpdateCollectionHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Prepare a sample collection for testing
-	collectionSample, err := core.LoadSampleCollection()
+	collectionSample, err := api.LoadSampleCollection()
 	assert.NoError(t, err)
 	collection, err := core.AddCollection(collectionSample.Name)
 	assert.NoError(t, err)
@@ -247,7 +247,7 @@ func TestUpdateCollectionHandler(t *testing.T) {
 			method := "PUT"
 			url := fmt.Sprintf("/collections/%d", tc.UpdatedCollection.ID)
 			var body []byte = updatedCollectionJSON
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -274,7 +274,7 @@ func TestDeleteCollectionHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Prepare a sample collection for testing
-	collectionSample, err := core.LoadSampleCollection()
+	collectionSample, err := api.LoadSampleCollection()
 	assert.NoError(t, err)
 	collection, err := core.AddCollection(collectionSample.Name)
 	assert.NoError(t, err)
@@ -305,7 +305,7 @@ func TestDeleteCollectionHandler(t *testing.T) {
 			method := "DELETE"
 			url := fmt.Sprintf("/collections/%d", tc.CollectionID)
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -323,7 +323,7 @@ func TestCountCollectionsHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create some collections and books to add to the database
-	sampleCollections, err := core.LoadListOfCollectionSamples()
+	sampleCollections, err := api.LoadListOfCollectionSamples()
 	assert.NoError(t, err)
 
 	collections := []models.Collection{}
@@ -370,7 +370,7 @@ func TestCountCollectionsHandler(t *testing.T) {
 			method := "GET"
 			url := "/collections/count"
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code)
@@ -391,11 +391,11 @@ func TestAddBookToCollectionHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Prepare a sample collection
-	collectionSample, err := core.LoadSampleCollection()
+	collectionSample, err := api.LoadSampleCollection()
 	assert.NoError(t, err)
 	collection, err := core.AddCollection(collectionSample.Name)
 	assert.NoError(t, err)
-	book, err := core.LoadSampleBook()
+	book, err := api.LoadSampleBook()
 	assert.NoError(t, err)
 	err = core.AddBook(book)
 	assert.NoError(t, err)
@@ -450,7 +450,7 @@ func TestAddBookToCollectionHandler(t *testing.T) {
 			method := "POST"
 			url := fmt.Sprintf("/collections/%d/books/add", tc.CollectionID)
 			var body []byte = requestBody
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code)
@@ -467,7 +467,7 @@ func TestListBooksInCollectionHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	listOfBooks, err := core.LoadListOfBookSamples()
+	listOfBooks, err := api.LoadListOfBookSamples()
 	assert.NoError(t, err)
 	for index, book := range listOfBooks {
 		err := core.AddBook(&book)
@@ -476,7 +476,7 @@ func TestListBooksInCollectionHandler(t *testing.T) {
 	}
 	assert.LessOrEqual(t, 10, len(listOfBooks))
 
-	listOfCollections, err := core.LoadListOfCollectionSamples()
+	listOfCollections, err := api.LoadListOfCollectionSamples()
 	assert.NoError(t, err)
 	for index, collection := range listOfCollections {
 		newCollection, err := core.AddCollection(collection.Name)
@@ -526,7 +526,7 @@ func TestListBooksInCollectionHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/collections/%d/books", tc.collectionID)
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -555,7 +555,7 @@ func TestListCollectionsOfBookAPIHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	listOfBooks, err := core.LoadListOfBookSamples()
+	listOfBooks, err := api.LoadListOfBookSamples()
 	assert.NoError(t, err)
 	for index, book := range listOfBooks {
 		err := core.AddBook(&book)
@@ -564,7 +564,7 @@ func TestListCollectionsOfBookAPIHandler(t *testing.T) {
 	}
 	assert.LessOrEqual(t, 10, len(listOfBooks))
 
-	listOfCollections, err := core.LoadListOfCollectionSamples()
+	listOfCollections, err := api.LoadListOfCollectionSamples()
 	assert.NoError(t, err)
 	for index, collection := range listOfCollections {
 		newCollection, err := core.AddCollection(collection.Name)
@@ -613,7 +613,7 @@ func TestListCollectionsOfBookAPIHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/books/%d/collections", tc.bookID)
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedCode, response.Code)
@@ -640,7 +640,7 @@ func TestListCollectionsOfBookAPIHandler(t *testing.T) {
 
 func AddCollections() error {
 	// Create a sample collection for testing
-	collectionSamples, err := core.LoadListOfCollectionSamples()
+	collectionSamples, err := api.LoadListOfCollectionSamples()
 	if err != nil {
 		return err
 	}

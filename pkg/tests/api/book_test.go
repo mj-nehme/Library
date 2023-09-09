@@ -1,47 +1,47 @@
 package api_test
 
-/*
 import (
-	"encoding/json"
-	"fmt"
 	"library/models"
 	"library/tests"
+	"library/tests/api"
 	"net/http"
-	"net/url"
-	"strconv"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/exp/slog"
 )
 
 func TestAddBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
+	// Create a valid book JSON
+	sampleBook, err := api.LoadSampleBook()
+	if err != nil {
+		slog.Error("Unable to load sample book. " + err.Error())
+	}
+
 	testCases := []struct {
 		Description string
-		BookJSON    []byte
+		Book        models.Book
 		Expected    int // Expected HTTP status code
 	}{
 		{
 			Description: "Add Valid Book",
-			BookJSON:    createValidBookJSON(),
+			Book:        sampleBook,
 			Expected:    http.StatusCreated,
 		},
 		{
 			Description: "Add Invalid Book",
-			BookJSON:    createInvalidBookJSON(),
+			Book:        models.Book{},
 			Expected:    http.StatusBadRequest,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.Description, func(t *testing.T) {
-			method := "POST"
-			url := "/books"
-			body := tc.BookJSON
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := api.SendAddBookRequest(router, &tc.Book)
+			assert.NoError(t, err)
 
 			// Check the response status code
 			assert.Equal(t, tc.Expected, response.Code, "Expected status code %d, but got %d", tc.Expected, response.Code)
@@ -49,21 +49,20 @@ func TestAddBookHandler(t *testing.T) {
 	}
 }
 
+/*
 func TestGetBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample book in the database for testing
-	book, err := core.LoadSampleBook()
+	book, err := api.LoadSampleBook()
 	assert.NoError(t, err)
 
-	err = core.AddBook(book)
-	if err != nil {
-		t.Fatalf("Failed to create sample book: %v", err)
-	}
+	_, err = api.SendAddBookRequest(router, &book)
+	assert.NoError(t, err)
 
 	// Convert the book ID to a string
-	bookID := strconv.Itoa(book.ID)
+	bookID := strconv.Itoa(int(book.ID))
 
 	testCases := []struct {
 		Description  string
@@ -75,7 +74,7 @@ func TestGetBookHandler(t *testing.T) {
 			Description:  "Get Existing Book",
 			URL:          "/books/" + bookID,
 			Expected:     http.StatusOK,
-			ExpectedBook: book, // Use a pointer to the book
+			ExpectedBook: &book, // Use a pointer to the book
 		},
 		{
 			Description:  "Get Non-Existent Book",
@@ -90,7 +89,7 @@ func TestGetBookHandler(t *testing.T) {
 			method := "GET"
 			url := tc.URL
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := sendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.Expected, response.Code, "Expected status code %d, but got %d", tc.Expected, response.Code)
@@ -115,12 +114,14 @@ func TestGetBookHandler(t *testing.T) {
 		})
 	}
 }
+
+/*
 func TestListBooksHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Load a list of sample books
-	sampleBooks, err := core.LoadListOfBookSamples()
+	sampleBooks, err := api.LoadListOfBookSamples()
 	assert.NoError(t, err)
 
 	for _, sampleBook := range sampleBooks {
@@ -134,7 +135,7 @@ func TestListBooksHandler(t *testing.T) {
 	method := "GET"
 	url := "/books"
 	var body []byte = nil
-	response := sendRequestV1(t, router, method, url, body)
+	response, err := SendRequestV1(router, method, url, body)
 
 	// Check the response status code
 	assert.Equal(t, http.StatusOK, response.Code, "Expected status code 200, but got %d", response.Code)
@@ -173,7 +174,7 @@ func TestUpdateBookHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample book in the database for testing
-	book, err := core.LoadSampleBook()
+	book, err := api.LoadSampleBook()
 	assert.NoError(t, err)
 
 	err = core.AddBook(book)
@@ -256,7 +257,7 @@ func TestUpdateBookHandler(t *testing.T) {
 			method := "PUT"
 			url := fmt.Sprintf("/books/%d", tc.UpdatedBook.ID)
 			body := updatedBookJSON
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
@@ -292,7 +293,7 @@ func TestDeleteBookHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample book in the database for testing
-	book, err := core.LoadSampleBook()
+	book, err := api.LoadSampleBook()
 	assert.NoError(t, err)
 
 	err = core.AddBook(book)
@@ -333,7 +334,7 @@ func TestDeleteBookHandler(t *testing.T) {
 			method := "DELETE"
 			url := fmt.Sprintf("/books/%d", tc.BookID)
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
@@ -352,7 +353,7 @@ func TestSearchBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	listOfBooks, err := core.LoadListOfBookSamples()
+	listOfBooks, err := api.LoadListOfBookSamples()
 	assert.NoError(t, err)
 	numberOfSampleBooks := len(listOfBooks)
 
@@ -410,7 +411,7 @@ func TestSearchBookHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/books/search?%s", query)
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
@@ -445,7 +446,7 @@ func TestCountBooksHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Load a list of sample books
-	books, err := core.LoadListOfBookSamples()
+	books, err := api.LoadListOfBookSamples()
 	assert.NoError(t, err)
 
 	for _, book := range books {
@@ -476,7 +477,7 @@ func TestCountBooksHandler(t *testing.T) {
 			method := "GET"
 			url := tc.RequestURL
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
@@ -492,25 +493,4 @@ func TestCountBooksHandler(t *testing.T) {
 	}
 }
 
-func createValidBookJSON() []byte {
-	// Create a valid book JSON
-	book, err := core.LoadSampleBook()
-	if err != nil {
-		// Handle the error appropriately or log it
-		return nil
-	}
-
-	bookJSON, err := json.Marshal(book)
-	if err != nil {
-		// Handle the error appropriately or log it
-		return nil
-	}
-
-	return bookJSON
-}
-
-func createInvalidBookJSON() []byte {
-	// Create an invalid book JSON, e.g., empty JSON
-	return []byte(`{}`)
-}
 */

@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"library/config"
+	"library/models"
 	"log"
 
 	"golang.org/x/exp/slog"
@@ -27,6 +28,11 @@ func (db *Database) Connect(cfg *config.DatabaseConfig) error {
 	db.DB, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to database. %v", err)
+	}
+
+	err = db.DB.AutoMigrate(&models.Book{}, &models.Collection{}, &models.Genre{})
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return nil

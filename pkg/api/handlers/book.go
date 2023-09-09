@@ -36,13 +36,8 @@ func AddBook(c *gin.Context) {
 	// Create a new record in the database
 	err := db.Create(&newBook).Error
 	if err != nil {
-		if _, ok := err.(*AlreadyExists); ok {
-			c.JSON(http.StatusConflict, gin.H{"error": "Book already exists"})
-			return
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create book"})
-			return
-		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create book"})
+		return
 	}
 
 	c.JSON(http.StatusCreated, newBook)

@@ -18,7 +18,7 @@ func TestAddGenre(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample genre in the database for testing
-	genre, err := core.LoadSampleGenre()
+	genre, err := api.LoadSampleGenre()
 	assert.NoError(t, err)
 
 	// Define test cases
@@ -54,7 +54,7 @@ func TestAddGenre(t *testing.T) {
 			method := "POST"
 			url := "/genres"
 			var body []byte = requestBody
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -66,7 +66,7 @@ func TestGetGenre(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample genre in the database for testing
-	genre, err := core.LoadSampleGenre()
+	genre, err := api.LoadSampleGenre()
 	assert.NoError(t, err)
 
 	genreID, err := core.AddGenre(genre.Name)
@@ -99,7 +99,7 @@ func TestGetGenre(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/genres/%d", tc.GenreID)
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -112,7 +112,7 @@ func TestListGenres(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample genre in the database for testing
-	genres, err := core.LoadListOfGenreSamples()
+	genres, err := api.LoadListOfGenreSamples()
 	assert.NoError(t, err)
 
 	// Define test cases
@@ -151,7 +151,7 @@ func TestListGenres(t *testing.T) {
 			method := "GET"
 			url := "/genres"
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -172,7 +172,7 @@ func TestUpdateGenre(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample genre in the database for testing
-	genre, err := core.LoadSampleGenre()
+	genre, err := api.LoadSampleGenre()
 	assert.NoError(t, err)
 
 	genreID, err := core.AddGenre(genre.Name)
@@ -212,7 +212,7 @@ func TestUpdateGenre(t *testing.T) {
 			method := "PUT"
 			url := fmt.Sprintf("/genres/%d", tc.GenreID)
 			body := []byte(fmt.Sprintf(`{"name": "%s"}`, tc.UpdatedGenreName))
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -225,7 +225,7 @@ func TestDeleteGenre(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample genre in the database for testing
-	genre, err := core.LoadSampleGenre()
+	genre, err := api.LoadSampleGenre()
 	assert.NoError(t, err)
 
 	genreID, err := core.AddGenre(genre.Name)
@@ -254,7 +254,7 @@ func TestDeleteGenre(t *testing.T) {
 			method := "DELETE"
 			url := fmt.Sprintf("/genres/%d", tc.GenreID)
 			body := []byte(nil)
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -274,7 +274,7 @@ func TestCountGenresHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample genre in the database for testing
-	genres, err := core.LoadListOfGenreSamples()
+	genres, err := api.LoadListOfGenreSamples()
 	assert.NoError(t, err)
 
 	// Define test cases
@@ -314,7 +314,7 @@ func TestCountGenresHandler(t *testing.T) {
 			method := "GET"
 			url := "/genres/count"
 			var body []byte = nil
-			response := sendRequestV1(t, router, method, url, body)
+			response, err := SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)

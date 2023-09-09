@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/exp/slog"
-	"gorm.io/gorm"
 )
 
 const (
@@ -25,7 +24,7 @@ func SetupTest(t *testing.T) Database {
 	assert.NoError(t, err)
 
 	// Connect to DB
-	db := Database{DB: &gorm.DB{}}
+	db := New()
 	err = db.Connect(&cfg.Database)
 	assert.NoError(t, err)
 
