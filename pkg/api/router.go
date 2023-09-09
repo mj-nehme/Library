@@ -2,13 +2,13 @@ package api
 
 import (
 	"library/api/handlers"
-	"library/core"
+	"library/db"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(db core.Database) *gin.Engine {
+func SetupRouter(db db.Database) *gin.Engine {
 	router := gin.Default()
 	router.Use(DBMiddleware(db.DB))
 

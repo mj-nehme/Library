@@ -24,7 +24,7 @@ func StartServer(ctx context.Context, port int, router *gin.Engine) error {
 
 	// Start the server
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("Failed to start the server: %v", err)
+		return fmt.Errorf("failed to start the server: %v", err)
 	}
 
 	return nil
@@ -37,7 +37,7 @@ func ShutdownServer(ctx context.Context) error {
 	// Attempt to shutdown the server gracefully
 	if err := server.Shutdown(ctx); err != nil {
 		// If the Shutdown method returns an error, forcefully close the server
-		return fmt.Errorf("Failed to start the server: %v", err)
+		return fmt.Errorf("failed to start the server: %v", err)
 		//server.Close()
 	}
 

@@ -1,4 +1,4 @@
-package core
+package db
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type Database struct {
 	DB *gorm.DB
 }
 
-func NewDB() Database {
+func New() Database {
 	return Database{DB: &gorm.DB{}}
 }
 
@@ -41,4 +41,28 @@ func buildDatabaseConnectionString(cfg *config.DatabaseConfig) string {
 	}
 
 	return connectionString
+}
+
+// ClearDatabase deletes all data from the tables in the database.
+func (db *Database) Clear() error {
+	/*
+		err := ClearBooks(db)
+		if err != nil {
+			return err
+		}
+		err = ClearCollections(db)
+		if err != nil {
+			return err
+		}
+		err = ClearBooksInCollections(db)
+		if err != nil {
+			return err
+		}
+		err = ClearGenres(db)
+		if err != nil {
+			return err
+		}
+	*/
+
+	return nil
 }

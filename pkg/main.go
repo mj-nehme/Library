@@ -4,7 +4,7 @@ import (
 	"context"
 	"library/api"
 	"library/config"
-	"library/core"
+	"library/db"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +30,7 @@ func main() {
 	slog.Info("Configuration: ", cfg)
 
 	// Initialize the database connection
-	db := core.NewDB()
+	db := db.New()
 	err = db.Connect(&cfg.Database)
 	if err != nil {
 		slog.Error("Error connecting to Database")
