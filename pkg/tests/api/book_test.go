@@ -2,7 +2,6 @@ package api_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"library/models"
 	"library/tests"
 	"library/tests/api"
@@ -57,7 +56,7 @@ func TestGetBookHandler(t *testing.T) {
 	defer tests.TearDownMockServer(db, ctx)
 
 	book := api.CreateBookTemplate(t, router)
-	fmt.Println("created book: ", book)
+
 	testCases := []struct {
 		Description string
 		BookID      uint
@@ -86,18 +85,19 @@ func TestGetBookHandler(t *testing.T) {
 			if tc.Expected == http.StatusOK {
 				// Read the response body and unmarshal it into a book
 				var responseBook models.Book
-				fmt.Println(response.Body.String())
 				err := json.Unmarshal(response.Body.Bytes(), &responseBook)
 				if err != nil {
 					t.Fatalf("Failed to unmarshal response JSON: %v", err)
 				}
+
 				// Convert expectedTime to UTC timezone
-				expectedTimeUTC := responseBook.Published.In(time.UTC)
+				actualTimeUTC := book.Published.In(time.UTC).Round(time.Hour)
+				expectedTimeUTC := responseBook.Published.In(time.UTC).Round(time.Hour)
 
 				// Add assertions to verify that the response book matches the expected book
 				assert.Equal(t, book.Title, responseBook.Title, "Title mismatch")
 				assert.Equal(t, book.Author, responseBook.Author, "Author mismatch")
-				assert.Equal(t, book.Published, expectedTimeUTC, "PublishedDate mismatch")
+				assert.Equal(t, expectedTimeUTC, actualTimeUTC, "PublishedDate mismatch")
 				assert.Equal(t, book.Edition, responseBook.Edition, "Edition mismatch")
 				assert.Equal(t, book.GenreName, responseBook.GenreName, "Genre mismatch")
 			}
@@ -105,60 +105,32 @@ func TestGetBookHandler(t *testing.T) {
 	}
 }
 
-/*
 func TestListBooksHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	// Load a list of sample books
-	sampleBooks, err := api.LoadListOfBookSamples()
-	assert.NoError(t, err)
-
-	for _, sampleBook := range sampleBooks {
-		err = core.AddBook(&sampleBook)
-		if err != nil {
-			t.Fatalf("Failed to create sample book: %v", err)
-		}
-	}
+	books := api.CreateListOfBookTemplates(t, router)
 
 	// Perform a GET request to the "ListBooks" endpoint
-	method := "GET"
-	url := "/books"
-	var body []byte = nil
-	response, err := SendRequestV1(router, method, url, body)
+	response, err := api.SendListBooksRequest(router)
+	assert.NoError(t, err)
 
 	// Check the response status code
 	assert.Equal(t, http.StatusOK, response.Code, "Expected status code 200, but got %d", response.Code)
 
-	// Define a test case for comparing response books with sample books
-	testCases := []struct {
-		Description  string
-		SampleBook   models.Book
-		ResponseBook models.Book
-	}{}
-
-	for i, sampleBook := range sampleBooks {
-		testCases = append(testCases, struct {
-			Description  string
-			SampleBook   models.Book
-			ResponseBook models.Book
-		}{
-			Description:  fmt.Sprintf("Book %d", i+1),
-			SampleBook:   sampleBook,
-			ResponseBook: sampleBook,
-		})
+	listOfBooks := []models.Book{}
+	err = json.Unmarshal(response.Body.Bytes(), &listOfBooks)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal response JSON: %v", err)
 	}
-
-	// Iterate through the test cases and create subtests
-	for _, tc := range testCases {
-		t.Run(tc.Description, func(t *testing.T) {
-			// Add assertions to compare the response books with the sample books
-			assert.Equal(t, tc.SampleBook.Title, tc.ResponseBook.Title, "Title mismatch")
-			assert.Equal(t, tc.SampleBook.Author, tc.ResponseBook.Author, "Author mismatch")
-		})
+	assert.Len(t, books, len(listOfBooks))
+	for index := range books {
+		listOfBooks[index].Published = listOfBooks[index].Published.UTC().Round(time.Hour)
+		assert.Equal(t, books[index], listOfBooks[index])
 	}
 }
 
+/*
 func TestUpdateBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)

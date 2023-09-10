@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"library/config"
 	"library/models"
@@ -21,6 +22,7 @@ func New() Database {
 
 // InitDB initializes the database connection pool
 func (db *Database) Connect(cfg *config.DatabaseConfig) error {
+	fmt.Println(cfg)
 	connectionString := buildDatabaseConnectionString(cfg)
 	slog.Debug("Connection String:", connectionString)
 
@@ -49,26 +51,11 @@ func buildDatabaseConnectionString(cfg *config.DatabaseConfig) string {
 	return connectionString
 }
 
-// ClearDatabase deletes all data from the tables in the database.
-func (db *Database) Clear() error {
-	/*
-		err := ClearBooks(db)
-		if err != nil {
-			return err
-		}
-		err = ClearCollections(db)
-		if err != nil {
-			return err
-		}
-		err = ClearBooksInCollections(db)
-		if err != nil {
-			return err
-		}
-		err = ClearGenres(db)
-		if err != nil {
-			return err
-		}
-	*/
+// Teardown cleans up the database after testing
+func (db *Database) Teardown() error {
+	if db.DB == nil {
+		return errors.New("database is pointing to nil")
+	}
 
-	return nil
+	return db.DB.Migrator().DropTable(&models.Book{}, &models.Collection{}, &models.Genre{})
 }

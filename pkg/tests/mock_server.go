@@ -6,6 +6,7 @@ import (
 	"library/api"
 	"library/config"
 	"library/db"
+	"library/models"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -22,6 +23,7 @@ const (
 	healthCheckPath = "/health"
 	testPort        = 8088
 	contextTimeout  = 10
+	tempDatabase    = "TempLibrary"
 )
 
 var ServerAddress = ""
@@ -46,15 +48,10 @@ func SetupMockServer() (*gin.Engine, db.Database, context.Context) {
 
 	// Initialize the database connection
 	db := db.New()
+	cfg.Database.Name = tempDatabase
 	err = db.Connect(&cfg.Database)
 	if err != nil {
 		slog.Error("Error connecting to Database")
-	}
-
-	// Clear up database
-	err = db.Clear()
-	if err != nil {
-		slog.Error("Error clearing up database")
 	}
 
 	// Start the API server
@@ -83,10 +80,9 @@ func TearDownMockServer(db db.Database, ctx context.Context) {
 	// Shut down the server gracefully
 	api.ShutdownServer(ctx)
 
-	// Clear up database
-	err := db.Clear()
+	err := db.DB.Migrator().DropTable(&models.Book{}, &models.Collection{}, &models.Genre{})
 	if err != nil {
-		slog.Error("Error clearing up database")
+		slog.Error(err.Error())
 	}
 }
 

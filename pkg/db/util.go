@@ -12,6 +12,7 @@ import (
 
 const (
 	contextTimeout = 10
+	tempDatabase   = "TempLibrary"
 )
 
 func SetupTest(t *testing.T) Database {
@@ -25,6 +26,7 @@ func SetupTest(t *testing.T) Database {
 
 	// Connect to DB
 	db := New()
+	cfg.Database.Name = tempDatabase
 	err = db.Connect(&cfg.Database)
 	assert.NoError(t, err)
 

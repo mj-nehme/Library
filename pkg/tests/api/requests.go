@@ -28,3 +28,10 @@ func SendGetBookRequest(router *gin.Engine, ID uint) (*httptest.ResponseRecorder
 	var body []byte = nil
 	return SendRequestV1(router, method, url, body)
 }
+
+func SendListBooksRequest(router *gin.Engine) (*httptest.ResponseRecorder, error) {
+	method := "GET"
+	url := "/books"
+	var body []byte = nil
+	return SendRequestV1(router, method, url, body)
+}

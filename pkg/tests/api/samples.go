@@ -6,16 +6,15 @@ import (
 	"library/models"
 	"library/tools"
 	"os"
-	"time"
 )
 
 const (
-	BookSamplePath          = "json/book_sample.json"
-	ListOfBooksSample       = "json/book_list_sample.json"
-	CollectionSamplePath    = "json/collection_sample.json"
-	ListOfCollectionsSample = "json/collection_list_sample.json"
-	GenreSamplePath         = "json/genre_sample.json"
-	ListOfGenresSample      = "json/genre_list_sample.json"
+	BookSamplePath              = "json/book_sample.json"
+	ListOfBookSamplesPath       = "json/book_list_sample.json"
+	CollectionSamplePath        = "json/collection_sample.json"
+	ListOfCollectionSamplesPath = "json/collection_list_sample.json"
+	GenreSamplePath             = "json/genre_sample.json"
+	ListOfGenreSamplesPath      = "json/genre_list_sample.json"
 )
 
 func LoadSampleBook() (models.Book, error) {
@@ -43,21 +42,32 @@ func LoadSampleBook() (models.Book, error) {
 	return sampleBook, nil
 }
 
-/*
 func LoadListOfBookSamples() ([]models.Book, error) {
+	var sampleBooks []models.Book
 	rootDir, err := tools.SearchRootDirectory()
 	if err != nil {
-		return nil, fmt.Errorf("unable to rerieve root directory. %v", err)
+		return nil, fmt.Errorf("unable to retrieve root directory. %v", err)
 	}
-	file, err := os.Open(rootDir + "/" + ListOfBooksSample)
+
+	file, err := os.Open(rootDir + "/" + ListOfBookSamplesPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}
 	defer file.Close()
 
-	return UnmarshalListOfBooks(file)
+	// Create a JSON decoder from the file
+	decoder := json.NewDecoder(file)
+
+	// Decode the JSON data into a slice of Book structs
+	err = decoder.Decode(&sampleBooks)
+	if err != nil {
+		return nil, err
+	}
+
+	return sampleBooks, nil
 }
 
+/*
 func LoadSampleCollection() (*models.Collection, error) {
 	// Load sample collection data from a JSON file
 	rootDir, err := tools.SearchRootDirectory()
@@ -223,7 +233,7 @@ func UnmarshalListOfBooks(file *os.File) ([]models.Book, error) {
 
 	return listOfBooks, nil
 } */
-
+/*
 func unmarshalBook(m map[string]interface{}) (*models.Book, error) {
 	// Create a Book struct to store the extracted fields
 	var book models.Book
@@ -285,3 +295,4 @@ func BooksDecoder(decoder *json.Decoder) ([]models.Book, error) {
 
 	return listOfBooks, nil
 }
+*/

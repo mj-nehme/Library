@@ -19,3 +19,8 @@ type Book struct {
 	UpdatedAt   datatypes.Date `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
+
+func (b *Book) BeforeSave(tx *gorm.DB) error {
+	b.Published = b.Published.UTC()
+	return nil
+}

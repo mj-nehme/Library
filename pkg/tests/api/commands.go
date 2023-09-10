@@ -26,3 +26,25 @@ func CreateBookTemplate(t *testing.T, router *gin.Engine) models.Book {
 
 	return createdBook
 }
+
+func CreateListOfBookTemplates(t *testing.T, router *gin.Engine) []models.Book {
+	// Load a list of sample books
+	sampleBooks, err := LoadListOfBookSamples()
+	assert.NoError(t, err)
+
+	createdBooks := []models.Book{}
+	for _, book := range sampleBooks {
+		response, err := SendAddBookRequest(router, &book)
+		assert.NoError(t, err)
+
+		// Read the response body and unmarshal it into a book
+		var createdBook models.Book
+		err = json.Unmarshal(response.Body.Bytes(), &createdBook)
+		if err != nil {
+			t.Fatalf("Failed to unmarshal response JSON: %v", err)
+		}
+		createdBooks = append(createdBooks, createdBook)
+	}
+
+	return createdBooks
+}
