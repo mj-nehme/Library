@@ -39,7 +39,6 @@ func LoadSampleBook() (models.Book, error) {
 	if err != nil {
 		return sampleBook, err
 	}
-	fmt.Println(sampleBook)
 
 	return sampleBook, nil
 }

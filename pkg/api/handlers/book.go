@@ -19,8 +19,6 @@ func init() {
 
 // AddBook handles the "POST /api/v1/books" endpoint to create a new book.
 func AddBook(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	// Bind the JSON request body to a Book struct
 	var newBook models.Book
 	if err := c.ShouldBindJSON(&newBook); err != nil {
@@ -34,9 +32,10 @@ func AddBook(c *gin.Context) {
 	}
 
 	// Create a new record in the database
+	db := c.MustGet("db").(*gorm.DB)
 	err := db.Create(&newBook).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create book"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create book" + err.Error()})
 		return
 	}
 
@@ -45,30 +44,29 @@ func AddBook(c *gin.Context) {
 
 // GetBook handles the "GET /api/v1/books/:id" endpoint to retrieve a specific book by its ID.
 func GetBook(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	bookIDParam := c.Param("id")
-
-	// Use the validator to check if the bookIDParam is a valid integer
-	err := validate.Var(bookIDParam, "required,int")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
-		return
-	}
 
 	bookID, err := strconv.Atoi(bookIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID" + err.Error()})
+		return
+	}
+
+	// Use the validator to check if the book ID is a valid integer
+	err = validate.Var(bookID, "required,numeric")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID" + err.Error()})
 		return
 	}
 
 	var book models.Book
+	db := c.MustGet("db").(*gorm.DB)
 	result := db.First(&book, bookID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found" + result.Error.Error()})
 		return
 	} else if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch book"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch book" + result.Error.Error()})
 		return
 	}
 
@@ -76,9 +74,8 @@ func GetBook(c *gin.Context) {
 }
 
 func ListBooks(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	var books []models.Book
+	db := c.MustGet("db").(*gorm.DB)
 	result := db.Find(&books)
 
 	if result.Error != nil {
@@ -89,8 +86,6 @@ func ListBooks(c *gin.Context) {
 }
 
 func UpdateBook(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	var book models.Book
 	if err := c.ShouldBindJSON(&book); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data. " + err.Error()})
@@ -105,10 +100,11 @@ func UpdateBook(c *gin.Context) {
 	}
 
 	var existingBook models.Book
+	db := c.MustGet("db").(*gorm.DB)
 	result := db.First(&existingBook, book.ID)
 
 	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found" + result.Error.Error()})
 		return
 	}
 
@@ -122,7 +118,7 @@ func UpdateBook(c *gin.Context) {
 	result = db.Save(&existingBook)
 
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update book"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update book" + result.Error.Error()})
 		return
 	}
 
@@ -130,8 +126,6 @@ func UpdateBook(c *gin.Context) {
 }
 
 func PatchBook(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	var updates map[string]interface{}
 	if err := c.ShouldBindJSON(&updates); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data. " + err.Error()})
@@ -139,10 +133,11 @@ func PatchBook(c *gin.Context) {
 	}
 
 	var existingBook models.Book
+	db := c.MustGet("db").(*gorm.DB)
 	result := db.First(&existingBook, c.Param("id"))
 
 	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found" + result.Error.Error()})
 		return
 	}
 
@@ -157,8 +152,6 @@ func PatchBook(c *gin.Context) {
 }
 
 func DeleteBook(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	// Get the book ID from the URL parameter
 	bookIDStr := c.Param("id")
 	bookID, err := strconv.Atoi(bookIDStr)
@@ -168,10 +161,11 @@ func DeleteBook(c *gin.Context) {
 	}
 
 	var existingBook models.Book
+	db := c.MustGet("db").(*gorm.DB)
 	result := db.First(&existingBook, bookID)
 
 	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found" + result.Error.Error()})
 		return
 	}
 
@@ -187,8 +181,6 @@ func DeleteBook(c *gin.Context) {
 
 // SearchBooks handles the "GET /api/v1/books/search" endpoint to search for books.
 func SearchBooks(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	// Get the query parameter from the URL
 	query := c.Query("q")
 
@@ -198,10 +190,11 @@ func SearchBooks(c *gin.Context) {
 	}
 
 	var books []models.Book
+	db := c.MustGet("db").(*gorm.DB)
 	result := db.Where("title LIKE ? OR author LIKE ?", "%"+query+"%", "%"+query+"%").Find(&books)
 
 	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch books"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch books" + result.Error.Error()})
 		return
 	}
 
@@ -209,9 +202,8 @@ func SearchBooks(c *gin.Context) {
 }
 
 func CountBooks(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
 	var count int64
+	db := c.MustGet("db").(*gorm.DB)
 	result := db.Model(&models.Book{}).Count(&count)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve books count" + result.Error.Error()})

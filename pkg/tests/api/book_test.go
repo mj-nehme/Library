@@ -1,11 +1,14 @@
 package api_test
 
 import (
+	"encoding/json"
+	"fmt"
 	"library/models"
 	"library/tests"
 	"library/tests/api"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/exp/slog"
@@ -49,67 +52,54 @@ func TestAddBookHandler(t *testing.T) {
 	}
 }
 
-/*
 func TestGetBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	// Create a sample book in the database for testing
-	book, err := api.LoadSampleBook()
-	assert.NoError(t, err)
-
-	_, err = api.SendAddBookRequest(router, &book)
-	assert.NoError(t, err)
-
-	// Convert the book ID to a string
-	bookID := strconv.Itoa(int(book.ID))
-
+	book := api.CreateBookTemplate(t, router)
+	fmt.Println("created book: ", book)
 	testCases := []struct {
-		Description  string
-		URL          string
-		Expected     int          // Expected HTTP status code
-		ExpectedBook *models.Book // Use a pointer to models.Book
+		Description string
+		BookID      uint
+		Expected    int // Expected HTTP status code
 	}{
 		{
-			Description:  "Get Existing Book",
-			URL:          "/books/" + bookID,
-			Expected:     http.StatusOK,
-			ExpectedBook: &book, // Use a pointer to the book
+			Description: "Get Existing Book",
+			BookID:      book.ID,
+			Expected:    http.StatusOK,
 		},
 		{
-			Description:  "Get Non-Existent Book",
-			URL:          "/books/999", // Use a non-existent ID
-			Expected:     http.StatusNotFound,
-			ExpectedBook: nil, // For non-existent book, no expected book
+			Description: "Get Non-Existent Book",
+			BookID:      book.ID + 1, // Use a non-existent ID
+			Expected:    http.StatusNotFound,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.Description, func(t *testing.T) {
-			method := "GET"
-			url := tc.URL
-			var body []byte = nil
-			response, err := sendRequestV1(router, method, url, body)
+			response, err := api.SendGetBookRequest(router, tc.BookID)
+			assert.NoError(t, err)
 
 			// Check the response status code
 			assert.Equal(t, tc.Expected, response.Code, "Expected status code %d, but got %d", tc.Expected, response.Code)
 
 			if tc.Expected == http.StatusOK {
-				if tc.ExpectedBook != nil {
-					// Read the response body and unmarshal it into a book
-					var responseBook models.Book
-					err := json.Unmarshal(response.Body.Bytes(), &responseBook)
-					if err != nil {
-						t.Fatalf("Failed to unmarshal response JSON: %v", err)
-					}
-
-					// Add assertions to verify that the response book matches the expected book
-					assert.Equal(t, tc.ExpectedBook.Title, responseBook.Title, "Title mismatch")
-					assert.Equal(t, tc.ExpectedBook.Author, responseBook.Author, "Author mismatch")
-					assert.Equal(t, tc.ExpectedBook.Published, responseBook.Published, "PublishedDate mismatch")
-					assert.Equal(t, tc.ExpectedBook.Edition, responseBook.Edition, "Edition mismatch")
-					assert.Equal(t, tc.ExpectedBook.GenreName, responseBook.GenreName, "Genre mismatch")
+				// Read the response body and unmarshal it into a book
+				var responseBook models.Book
+				fmt.Println(response.Body.String())
+				err := json.Unmarshal(response.Body.Bytes(), &responseBook)
+				if err != nil {
+					t.Fatalf("Failed to unmarshal response JSON: %v", err)
 				}
+				// Convert expectedTime to UTC timezone
+				expectedTimeUTC := responseBook.Published.In(time.UTC)
+
+				// Add assertions to verify that the response book matches the expected book
+				assert.Equal(t, book.Title, responseBook.Title, "Title mismatch")
+				assert.Equal(t, book.Author, responseBook.Author, "Author mismatch")
+				assert.Equal(t, book.Published, expectedTimeUTC, "PublishedDate mismatch")
+				assert.Equal(t, book.Edition, responseBook.Edition, "Edition mismatch")
+				assert.Equal(t, book.GenreName, responseBook.GenreName, "Genre mismatch")
 			}
 		})
 	}
