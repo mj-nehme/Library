@@ -1,0 +1,62 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: TestLibrary
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.x"
+
+      - name: Initialize Go modules
+        run: go mod init library
+
+      - name: Tidy up Go modules
+        run: go mod tidy
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build
+        working-directory: pkg
+        run: make build
+
+      - name: Install gocovmerge
+        run: go get -u github.com/wadey/gocovmerge
+
+      - name: Run tests
+        working-directory: pkg
+        run: make test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: TestLibrary
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_SSL_MODE: disable
