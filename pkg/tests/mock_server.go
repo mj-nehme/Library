@@ -80,7 +80,7 @@ func TearDownMockServer(db db.Database, ctx context.Context) {
 	// Shut down the server gracefully
 	api.ShutdownServer(ctx)
 
-	err := db.DB.Migrator().DropTable(&models.Book{}, &models.Collection{}, &models.Genre{})
+	err := db.DB.Migrator().DropTable(&models.Book{})
 	if err != nil {
 		slog.Error(err.Error())
 	}

@@ -32,7 +32,7 @@ func (db *Database) Connect(cfg *config.DatabaseConfig) error {
 		log.Fatalf("Failed to connect to database. %v", err)
 	}
 
-	err = db.DB.AutoMigrate(&models.Book{}, &models.Collection{}, &models.Genre{})
+	err = db.DB.AutoMigrate(&models.Book{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,5 +57,5 @@ func (db *Database) Teardown() error {
 		return errors.New("database is pointing to nil")
 	}
 
-	return db.DB.Migrator().DropTable(&models.Book{}, &models.Collection{}, &models.Genre{})
+	return db.DB.Migrator().DropTable(&models.Book{})
 }

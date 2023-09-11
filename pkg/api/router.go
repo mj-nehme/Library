@@ -35,26 +35,6 @@ func SetupRouter(db db.Database) *gin.Engine {
 		v1.DELETE("/books/:id", handlers.DeleteBook)
 		v1.GET("/books/search", handlers.SearchBooks)
 		v1.GET("/books/count", handlers.CountBooks)
-		/*
-			// Collections routes
-			v1.POST("/collections", handlers.AddCollection)
-			v1.GET("/collections/:id", handlers.GetCollection)
-			v1.GET("/collections", handlers.ListCollections)
-			v1.PUT("/collections/:id", handlers.UpdateCollection)
-			v1.DELETE("/collections/:id", handlers.DeleteCollection)
-			v1.GET("/collections/count", handlers.CountCollections)
-
-			v1.POST("/collections/:id/books/add", handlers.AddBookToCollection)
-			v1.GET("/books/:id/collections", handlers.ListCollectionsOfBook)
-			v1.GET("/collections/:id/books", handlers.ListBooksInCollection)
-
-			// Genres routes
-			v1.POST("/genres", handlers.AddGenre)
-			v1.GET("/genres/:id", handlers.GetGenre)
-			v1.GET("/genres", handlers.ListGenres)
-			v1.PUT("/genres/:id", handlers.UpdateGenre)
-			v1.DELETE("/genres/:id", handlers.DeleteGenre)
-			v1.GET("/genres/count", handlers.CountGenres) */
 	}
 
 	// Default route for 404 Not Found
