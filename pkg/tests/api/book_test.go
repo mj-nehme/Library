@@ -6,6 +6,7 @@ import (
 	"library/tests"
 	"library/tests/api"
 	"net/http"
+	"net/url"
 	"testing"
 	"time"
 
@@ -229,7 +230,6 @@ func TestUpdateBookHandler(t *testing.T) {
 	}
 }
 
-/*
 func TestPatchBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
@@ -327,7 +327,7 @@ func TestPatchBookHandler(t *testing.T) {
 			}
 		})
 	}
-} */
+}
 
 func TestDeleteBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
@@ -379,29 +379,11 @@ func TestDeleteBookHandler(t *testing.T) {
 	}
 }
 
-/*
 func TestSearchBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	listOfBooks, err := api.LoadListOfBookSamples()
-	assert.NoError(t, err)
-	numberOfSampleBooks := len(listOfBooks)
-
-	for _, book := range listOfBooks {
-		err = core.AddBook(&book)
-		if err != nil {
-			t.Fatalf("Failed to create sample book: %v", err)
-		}
-	}
-
-	listOfBooks, err = core.ListBooks()
-	assert.NoError(t, err)
-	assert.Equal(t, numberOfSampleBooks, len(listOfBooks), "Expected %d books, but got %d", numberOfSampleBooks, len(listOfBooks))
-
-	count, err := core.CountBooks()
-	assert.NoError(t, err)
-	assert.Equal(t, numberOfSampleBooks, count, "Expected %d books, but got %d", numberOfSampleBooks, len(listOfBooks))
+	books := api.CreateListOfBookTemplates(t, router)
 
 	// Create test cases for different search queries
 	testCases := []struct {
@@ -413,8 +395,8 @@ func TestSearchBookHandler(t *testing.T) {
 		{
 			Description: "Search by Author and Genre",
 			QueryParams: map[string]string{
-				"author": listOfBooks[0].Author,
-				"genre":  listOfBooks[0].GenreName,
+				"author": books[0].Author,
+				"genre":  books[0].GenreName,
 			},
 			ExpectedHTTPCode: http.StatusOK,
 			ExpectedCount:    1,
@@ -422,7 +404,7 @@ func TestSearchBookHandler(t *testing.T) {
 		{
 			Description: "Search by Author Only",
 			QueryParams: map[string]string{
-				"author": listOfBooks[0].Author,
+				"author": books[0].Author,
 			},
 			ExpectedHTTPCode: http.StatusOK,
 			ExpectedCount:    1, // Adjust the expected count as needed
@@ -438,11 +420,8 @@ func TestSearchBookHandler(t *testing.T) {
 			}
 			query := values.Encode()
 
-			// Create the URL for the GET request
-			method := "GET"
-			url := fmt.Sprintf("/books/search?%s", query)
-			var body []byte = nil
-			response, err := api.SendRequestV1(router, method, url, body)
+			response, err := api.SendSearchBooksRequest(router, query)
+			assert.NoError(t, err)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
@@ -458,7 +437,7 @@ func TestSearchBookHandler(t *testing.T) {
 			assert.Len(t, responseBooks, tc.ExpectedCount, "Expected %d books in the response", tc.ExpectedCount)
 
 			// Add assertions to compare the response books with the expected books
-			for i, expectedBook := range listOfBooks {
+			for i, expectedBook := range books {
 				if i >= len(responseBooks) {
 					break // Avoid index out of range error
 				}
@@ -472,56 +451,41 @@ func TestSearchBookHandler(t *testing.T) {
 		})
 	}
 }
+
 func TestCountBooksHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
-	// Load a list of sample books
-	books, err := api.LoadListOfBookSamples()
-	assert.NoError(t, err)
-
-	for _, book := range books {
-		err := core.AddBook(&book)
-		assert.NoError(t, err)
-	}
+	books := api.CreateListOfBookTemplates(t, router)
 
 	// Define test cases for counting books
 	testCases := []struct {
 		Description      string
-		RequestURL       string
 		ExpectedHTTPCode int
-		ExpectedCount    int
-		ExpectedResponse map[string]int
+		ExpectedCount    int64
 	}{
 		{
 			Description:      "Count All Books",
-			RequestURL:       "/books/count",
 			ExpectedHTTPCode: http.StatusOK,
-			ExpectedCount:    len(books),
-			ExpectedResponse: map[string]int{"count": len(books)},
+			ExpectedCount:    int64(len(books)),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.Description, func(t *testing.T) {
-			// Prepare the request to the "CountBooks" endpoint
-			method := "GET"
-			url := tc.RequestURL
-			var body []byte = nil
-			response, err := api.SendRequestV1(router, method, url, body)
+			response, err := api.SendCountBooksRequest(router)
+			assert.NoError(t, err)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
 
 			// Parse the response JSON to get the count
-			var responseCount map[string]int
+			var responseCount int64 // Change the type to int64
 			err = json.NewDecoder(response.Body).Decode(&responseCount)
 			assert.NoError(t, err)
 
 			// Check if the response contains the correct count
-			assert.Equal(t, tc.ExpectedResponse, responseCount, "Unexpected count response")
+			assert.Equal(t, tc.ExpectedCount, responseCount, "Unexpected count response")
 		})
 	}
 }
-
-*/
