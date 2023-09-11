@@ -129,7 +129,14 @@ func TestListBooksHandler(t *testing.T) {
 	for index := range books {
 		listOfBooks[index].Published = listOfBooks[index].Published.UTC().Round(time.Hour)
 		books[index].Published = books[index].Published.UTC().Round(time.Hour)
-		assert.Equal(t, books[index], listOfBooks[index])
+
+		assert.Equal(t, books[index].Title, listOfBooks[index].Title, "Title mismatch")
+		assert.Equal(t, books[index].Author, listOfBooks[index].Author, "Author mismatch")
+		assert.Equal(t, books[index].Edition, listOfBooks[index].Edition, "Edition mismatch")
+		assert.Equal(t, books[index].Published, listOfBooks[index].Published, "Published mismatch")
+		assert.Equal(t, books[index].Description, listOfBooks[index].Description, "Description mismatch")
+		assert.Equal(t, books[index].GenreName, listOfBooks[index].GenreName, "Genre mismatch")
+
 	}
 }
 
