@@ -12,7 +12,7 @@ import (
 
 const (
 	contextTimeout = 10
-	tempDatabase   = "TempLibrary"
+	tempDatabase   = "TestLibrary"
 )
 
 func SetupTest(t *testing.T) Database {

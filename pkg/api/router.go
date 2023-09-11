@@ -31,6 +31,7 @@ func SetupRouter(db db.Database) *gin.Engine {
 		v1.GET("/books/:id", handlers.GetBook)
 		v1.GET("/books", handlers.ListBooks)
 		v1.PUT("/books/:id", handlers.UpdateBook)
+		v1.PATCH("/books/:id", handlers.PatchBook)
 		v1.DELETE("/books/:id", handlers.DeleteBook)
 		v1.GET("/books/search", handlers.SearchBooks)
 		v1.GET("/books/count", handlers.CountBooks)

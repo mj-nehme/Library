@@ -23,7 +23,7 @@ const (
 	healthCheckPath = "/health"
 	testPort        = 8088
 	contextTimeout  = 10
-	tempDatabase    = "TempLibrary"
+	testDatabase    = "TestLibrary"
 )
 
 var ServerAddress = ""
@@ -48,7 +48,7 @@ func SetupMockServer() (*gin.Engine, db.Database, context.Context) {
 
 	// Initialize the database connection
 	db := db.New()
-	cfg.Database.Name = tempDatabase
+	cfg.Database.Name = testDatabase
 	err = db.Connect(&cfg.Database)
 	if err != nil {
 		slog.Error("Error connecting to Database")

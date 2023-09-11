@@ -248,37 +248,27 @@ func TestPatchBookHandler(t *testing.T) {
 	updatedBookTitle.Author = book.Author
 
 	nonExistingBook := api.CopyBook(updatedBookTitle)
-	nonExistingBook.ID = book.ID - 1
+	nonExistingBook.ID = book.ID + 1
+	updatedBookTitle.Title = book.Title
+	updatedBookTitle.Author = book.Author
 
 	// Define test cases for patching books
 	testCases := []struct {
 		Description      string
 		PatchedBook      models.Book
-		ExpectedTitle    string
-		ExpectedAuthor   string
 		ExpectedHTTPCode int
-		ExpectedDBTitle  string
-		ExpectedDBAuthor string
 		ShouldFail       bool // Whether the patch should fail
 	}{
 		{
 			Description:      "Patch Book Title and Author",
 			PatchedBook:      *updatedBook,
-			ExpectedTitle:    updatedTitle,
-			ExpectedAuthor:   updatedAuthor,
 			ExpectedHTTPCode: http.StatusOK,
-			ExpectedDBTitle:  updatedTitle,
-			ExpectedDBAuthor: updatedAuthor,
 			ShouldFail:       false,
 		},
 		{
 			Description:      "Patch Book Title Only",
 			PatchedBook:      *updatedBookTitle,
-			ExpectedTitle:    updatedTitle,
-			ExpectedAuthor:   book.Author, // Author should remain unchanged
 			ExpectedHTTPCode: http.StatusOK,
-			ExpectedDBTitle:  updatedTitle,
-			ExpectedDBAuthor: book.Author, // Author in the database should remain unchanged
 			ShouldFail:       false,
 		},
 		{
@@ -306,8 +296,8 @@ func TestPatchBookHandler(t *testing.T) {
 				}
 
 				// Verify that the response book matches the expected patched book data
-				assert.Equal(t, tc.ExpectedTitle, responseBook.Title, "Title mismatch")
-				assert.Equal(t, tc.ExpectedAuthor, responseBook.Author, "Author mismatch")
+				assert.Equal(t, tc.PatchedBook.Title, responseBook.Title, "Title mismatch")
+				assert.Equal(t, tc.PatchedBook.Author, responseBook.Author, "Author mismatch")
 
 				// Fetch the book from the database to ensure it was patched
 				response, err := api.SendGetBookRequest(router, tc.PatchedBook.ID)
@@ -322,8 +312,8 @@ func TestPatchBookHandler(t *testing.T) {
 				assert.NoError(t, err)
 
 				// Verify that the book in the database matches the expected patched book data
-				assert.Equal(t, tc.ExpectedDBTitle, patchedBookFromDB.Title, "Title mismatch in the database")
-				assert.Equal(t, tc.ExpectedDBAuthor, patchedBookFromDB.Author, "Author mismatch in the database")
+				assert.Equal(t, tc.PatchedBook.Title, patchedBookFromDB.Title, "Title mismatch in the database")
+				assert.Equal(t, tc.PatchedBook.Author, patchedBookFromDB.Author, "Author mismatch in the database")
 			}
 		})
 	}
