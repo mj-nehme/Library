@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"library/models"
 	"net/http"
 	"strconv"
@@ -126,7 +127,6 @@ func UpdateBook(c *gin.Context) {
 }
 
 func PatchBook(c *gin.Context) {
-	bookID := c.Param("id")
 	var updates map[string]interface{}
 	if err := c.ShouldBindJSON(&updates); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data. " + err.Error()})
@@ -135,7 +135,7 @@ func PatchBook(c *gin.Context) {
 
 	var existingBook models.Book
 	db := c.MustGet("db").(*gorm.DB)
-	result := db.First(&existingBook, bookID)
+	result := db.First(&existingBook, c.Param("id"))
 
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found" + result.Error.Error()})
@@ -179,19 +179,53 @@ func DeleteBook(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Book deleted successfully"})
 }
 
+// buildSearchQuery constructs a GORM query based on provided parameters.
+func buildSearchQuery(db *gorm.DB, params map[string]string) *gorm.DB {
+	query := db
+	for key, value := range params {
+		switch key {
+		case "author":
+			query = query.Where("author LIKE ?", "%"+value+"%")
+		case "genre":
+			query = query.Where("genre_name LIKE ?", "%"+value+"%")
+		case "title":
+			query = query.Where("title LIKE ?", "%"+value+"%")
+		case "from":
+			// Assuming "from" is the parameter for the start of the date range
+			if value != "" {
+				query = query.Where("published >= ?", value)
+			}
+		case "to":
+			// Assuming "to" is the parameter for the end of the date range
+			if value != "" {
+				query = query.Where("published <= ?", value)
+			}
+		case "description":
+			query = query.Where("description LIKE ?", "%"+value+"%")
+		}
+	}
+	return query
+}
+
 // SearchBooks handles the "GET /api/v1/books/search" endpoint to search for books.
 func SearchBooks(c *gin.Context) {
-	// Get the query parameter from the URL
-	query := c.Query("q")
-
-	if query == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Search query is required"})
-		return
+	// Get the query parameters from the URL
+	params := map[string]string{
+		"title":       c.Query("title"),
+		"author":      c.Query("author"),
+		"from":        c.Query("from"),
+		"to":          c.Query("to"),
+		"description": c.Query("description"),
+		"genre":       c.Query("genre"),
 	}
 
-	var books []models.Book
+	// Build the search query
 	db := c.MustGet("db").(*gorm.DB)
-	result := db.Where("title LIKE ? OR author LIKE ?", "%"+query+"%", "%"+query+"%").Find(&books)
+	query := buildSearchQuery(db, params)
+	fmt.Println("Query: ", query)
+
+	var books []models.Book
+	result := query.Find(&books)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch books" + result.Error.Error()})

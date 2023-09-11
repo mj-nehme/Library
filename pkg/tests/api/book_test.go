@@ -2,6 +2,7 @@ package api_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"library/models"
 	"library/tests"
 	"library/tests/api"
@@ -409,6 +410,7 @@ func TestSearchBookHandler(t *testing.T) {
 				values.Add(key, value)
 			}
 			query := values.Encode()
+			fmt.Println("Query: ", query)
 
 			response, err := api.SendSearchBooksRequest(router, query)
 			assert.NoError(t, err)
@@ -431,10 +433,12 @@ func TestSearchBookHandler(t *testing.T) {
 				if i >= len(responseBooks) {
 					break // Avoid index out of range error
 				}
+				publishedTimeUTC := responseBooks[i].Published.In(time.UTC).Round(time.Hour)
+
 				assert.Equal(t, expectedBook.Title, responseBooks[i].Title, "Title mismatch")
 				assert.Equal(t, expectedBook.Author, responseBooks[i].Author, "Author mismatch")
 				assert.Equal(t, expectedBook.Edition, responseBooks[i].Edition, "Edition mismatch")
-				assert.Equal(t, expectedBook.Published.Format(time.DateOnly), responseBooks[i].Published.Format(time.DateOnly), "Published mismatch")
+				assert.Equal(t, expectedBook.Published, publishedTimeUTC, "Published mismatch")
 				assert.Equal(t, expectedBook.Description, responseBooks[i].Description, "Description mismatch")
 				assert.Equal(t, expectedBook.GenreName, responseBooks[i].GenreName, "Genre mismatch")
 			}
