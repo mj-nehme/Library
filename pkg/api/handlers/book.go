@@ -163,7 +163,6 @@ func DeleteBook(c *gin.Context) {
 	var existingBook models.Book
 	db := c.MustGet("db").(*gorm.DB)
 	result := db.First(&existingBook, bookID)
-
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found" + result.Error.Error()})
 		return

@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"io"
+	"library/models"
 	"net/http"
 	"net/http/httptest"
 
@@ -43,4 +44,16 @@ func SendRequestV1(router *gin.Engine, method string, path string, requestBody [
 	url := v1Prefix + path
 
 	return SendRequest(router, method, url, requestBody)
+}
+
+// CopyBook makes a deep copy of a book in the database with a different ID
+// This is only used for tests
+func CopyBook(book *models.Book) *models.Book {
+	// Create a deep copy of the book
+	copiedBook := *book
+
+	// Make sure that the nook isn't considered as a duplicate
+	copiedBook.Edition++
+
+	return &copiedBook
 }

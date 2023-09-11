@@ -51,7 +51,7 @@ func TestAddCollectionHandler(t *testing.T) {
 			method := "POST"
 			url := "/collections"
 			var body []byte = payload
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -109,7 +109,7 @@ func TestGetCollectionHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/collections/%d", tc.CollectionID)
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -169,7 +169,7 @@ func TestListCollectionsHandler(t *testing.T) {
 			method := "GET"
 			url := "/collections"
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -247,7 +247,7 @@ func TestUpdateCollectionHandler(t *testing.T) {
 			method := "PUT"
 			url := fmt.Sprintf("/collections/%d", tc.UpdatedCollection.ID)
 			var body []byte = updatedCollectionJSON
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -305,7 +305,7 @@ func TestDeleteCollectionHandler(t *testing.T) {
 			method := "DELETE"
 			url := fmt.Sprintf("/collections/%d", tc.CollectionID)
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Unexpected status code")
@@ -370,7 +370,7 @@ func TestCountCollectionsHandler(t *testing.T) {
 			method := "GET"
 			url := "/collections/count"
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code)
@@ -450,7 +450,7 @@ func TestAddBookToCollectionHandler(t *testing.T) {
 			method := "POST"
 			url := fmt.Sprintf("/collections/%d/books/add", tc.CollectionID)
 			var body []byte = requestBody
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code)
@@ -526,7 +526,7 @@ func TestListBooksInCollectionHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/collections/%d/books", tc.collectionID)
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -613,7 +613,7 @@ func TestListCollectionsOfBookAPIHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/books/%d/collections", tc.bookID)
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedCode, response.Code)

@@ -54,7 +54,7 @@ func TestAddGenre(t *testing.T) {
 			method := "POST"
 			url := "/genres"
 			var body []byte = requestBody
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -99,7 +99,7 @@ func TestGetGenre(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/genres/%d", tc.GenreID)
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -151,7 +151,7 @@ func TestListGenres(t *testing.T) {
 			method := "GET"
 			url := "/genres"
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -212,7 +212,7 @@ func TestUpdateGenre(t *testing.T) {
 			method := "PUT"
 			url := fmt.Sprintf("/genres/%d", tc.GenreID)
 			body := []byte(fmt.Sprintf(`{"name": "%s"}`, tc.UpdatedGenreName))
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -254,7 +254,7 @@ func TestDeleteGenre(t *testing.T) {
 			method := "DELETE"
 			url := fmt.Sprintf("/genres/%d", tc.GenreID)
 			body := []byte(nil)
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)
@@ -262,7 +262,7 @@ func TestDeleteGenre(t *testing.T) {
 			if tc.ExpectedStatus == http.StatusNoContent {
 				// If the genre was deleted successfully, try fetching it to ensure it is not found
 				method = "GET"
-				response = sendRequestV1(t, router, method, url, body)
+				response = api.SendRequestV1(t, router, method, url, body)
 				assert.Equal(t, http.StatusNotFound, response.Code, "Expected status code 404, but got %d", response.Code)
 			}
 		})
@@ -314,7 +314,7 @@ func TestCountGenresHandler(t *testing.T) {
 			method := "GET"
 			url := "/genres/count"
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedStatus, response.Code, "Expected status code %d, but got %d", tc.ExpectedStatus, response.Code)

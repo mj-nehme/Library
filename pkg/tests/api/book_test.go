@@ -130,36 +130,24 @@ func TestListBooksHandler(t *testing.T) {
 	}
 }
 
-/*
 func TestUpdateBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample book in the database for testing
-	book, err := api.LoadSampleBook()
-	assert.NoError(t, err)
+	book := api.CreateBookTemplate(t, router)
 
-	err = core.AddBook(book)
-	assert.NoError(t, err)
-
-	book, err = core.GetBook(book.ID)
-	assert.NoError(t, err)
-	assert.Positive(t, book.ID)
-
-	updatedBook, err := core.CopyBook(book)
-	assert.NoError(t, err)
+	updatedBook := api.CopyBook(&book)
 	updatedTitle := "Updated Book Title"
 	updatedAuthor := "Updated Book Author"
 	updatedBook.Title = updatedTitle
 	updatedBook.Author = updatedAuthor
 
-	updatedBookTitle, err := core.CopyBook(updatedBook)
-	assert.NoError(t, err)
+	updatedBookTitle := api.CopyBook(updatedBook)
 	updatedBookTitle.Title = updatedTitle
 	updatedBookTitle.Author = book.Author
 
-	nonExistingBook, err := core.CopyBook(updatedBookTitle)
-	assert.NoError(t, err)
+	nonExistingBook := api.CopyBook(updatedBookTitle)
 	nonExistingBook.ID = book.ID - 1
 
 	// Define test cases for updating books
@@ -199,27 +187,12 @@ func TestUpdateBookHandler(t *testing.T) {
 			ExpectedHTTPCode: http.StatusNotFound,
 			ShouldFail:       true,
 		},
-		{
-			Description:      "Update Bad Request Book",
-			UpdatedBook:      models.Book{ID: -1},
-			ExpectedHTTPCode: http.StatusBadRequest,
-			ShouldFail:       true,
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.Description, func(t *testing.T) {
-			// Convert the updated book payload to JSON
-			updatedBookJSON, err := json.Marshal(tc.UpdatedBook)
-			if err != nil {
-				t.Fatalf("Failed to marshal JSON: %v", err)
-			}
-
-			// Perform a PUT request to the "UpdateBook" endpoint
-			method := "PUT"
-			url := fmt.Sprintf("/books/%d", tc.UpdatedBook.ID)
-			body := updatedBookJSON
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendUpdateBookRequest(router, &tc.UpdatedBook)
+			assert.NoError(t, err)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
@@ -237,10 +210,16 @@ func TestUpdateBookHandler(t *testing.T) {
 				assert.Equal(t, tc.ExpectedAuthor, responseBook.Author, "Author mismatch")
 
 				// Fetch the book from the database to ensure it was updated
-				updatedBookFromDB, err := core.GetBook(tc.UpdatedBook.ID)
-				if err != nil {
-					t.Fatalf("Failed to fetch updated book from the database: %v", err)
-				}
+				response, err := api.SendGetBookRequest(router, tc.UpdatedBook.ID)
+				assert.NoError(t, err)
+
+				// Check the response status code
+				assert.Equal(t, http.StatusOK, response.Code, "Expected status code %d, but got %d", http.StatusOK, response.Code)
+
+				// Read the response body and unmarshal it into a book
+				var updatedBookFromDB models.Book
+				err = json.Unmarshal(response.Body.Bytes(), &updatedBookFromDB)
+				assert.NoError(t, err)
 
 				// Verify that the book in the database matches the expected updated book data
 				assert.Equal(t, tc.ExpectedDBTitle, updatedBookFromDB.Title, "Title mismatch in the database")
@@ -250,67 +229,157 @@ func TestUpdateBookHandler(t *testing.T) {
 	}
 }
 
-func TestDeleteBookHandler(t *testing.T) {
+/*
+func TestPatchBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
 
 	// Create a sample book in the database for testing
-	book, err := api.LoadSampleBook()
-	assert.NoError(t, err)
+	book := api.CreateBookTemplate(t, router)
 
-	err = core.AddBook(book)
-	if err != nil {
-		t.Fatalf("Failed to create sample book: %v", err)
-	}
+	updatedBook := api.CopyBook(&book)
+	updatedTitle := "Updated Book Title"
+	updatedAuthor := "Updated Book Author"
+	updatedBook.Title = updatedTitle
+	updatedBook.Author = updatedAuthor
 
-	// Define test cases for deleting books
+	updatedBookTitle := api.CopyBook(updatedBook)
+	updatedBookTitle.Title = updatedTitle
+	updatedBookTitle.Author = book.Author
+
+	nonExistingBook := api.CopyBook(updatedBookTitle)
+	nonExistingBook.ID = book.ID - 1
+
+	// Define test cases for patching books
 	testCases := []struct {
 		Description      string
-		BookID           int
+		PatchedBook      models.Book
+		ExpectedTitle    string
+		ExpectedAuthor   string
 		ExpectedHTTPCode int
-		ShouldExist      bool
+		ExpectedDBTitle  string
+		ExpectedDBAuthor string
+		ShouldFail       bool // Whether the patch should fail
 	}{
 		{
-			Description:      "Delete Existing Book",
-			BookID:           book.ID,
+			Description:      "Patch Book Title and Author",
+			PatchedBook:      *updatedBook,
+			ExpectedTitle:    updatedTitle,
+			ExpectedAuthor:   updatedAuthor,
 			ExpectedHTTPCode: http.StatusOK,
-			ShouldExist:      false,
+			ExpectedDBTitle:  updatedTitle,
+			ExpectedDBAuthor: updatedAuthor,
+			ShouldFail:       false,
 		},
 		{
-			Description:      "Delete Invalid Book",
-			BookID:           -1, // Use an invalid ID
-			ExpectedHTTPCode: http.StatusBadRequest,
-			ShouldExist:      false, // Invalid book should still not exist
+			Description:      "Patch Book Title Only",
+			PatchedBook:      *updatedBookTitle,
+			ExpectedTitle:    updatedTitle,
+			ExpectedAuthor:   book.Author, // Author should remain unchanged
+			ExpectedHTTPCode: http.StatusOK,
+			ExpectedDBTitle:  updatedTitle,
+			ExpectedDBAuthor: book.Author, // Author in the database should remain unchanged
+			ShouldFail:       false,
 		},
 		{
-			Description:      "Delete Non-Existent Book",
-			BookID:           book.ID - 1, // Use a non-existent ID
+			Description:      "Patch Non-Existent Book",
+			PatchedBook:      *nonExistingBook,
 			ExpectedHTTPCode: http.StatusNotFound,
-			ShouldExist:      false, // Non-existent book still not exist
+			ShouldFail:       true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.Description, func(t *testing.T) {
-			// Perform a DELETE request to the "DeleteBook" endpoint with the book ID
-			method := "DELETE"
-			url := fmt.Sprintf("/books/%d", tc.BookID)
-			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendPatchBookRequest(router, &tc.PatchedBook)
+			assert.NoError(t, err)
+
+			// Check the response status code
+			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
+
+			if !tc.ShouldFail && tc.ExpectedHTTPCode == http.StatusOK {
+				// Read the response body
+				var responseBook models.Book
+				err = json.Unmarshal(response.Body.Bytes(), &responseBook)
+				if err != nil {
+					t.Fatalf("Failed to unmarshal response JSON: %v", err)
+				}
+
+				// Verify that the response book matches the expected patched book data
+				assert.Equal(t, tc.ExpectedTitle, responseBook.Title, "Title mismatch")
+				assert.Equal(t, tc.ExpectedAuthor, responseBook.Author, "Author mismatch")
+
+				// Fetch the book from the database to ensure it was patched
+				response, err := api.SendGetBookRequest(router, tc.PatchedBook.ID)
+				assert.NoError(t, err)
+
+				// Check the response status code
+				assert.Equal(t, http.StatusOK, response.Code, "Expected status code %d, but got %d", http.StatusOK, response.Code)
+
+				// Read the response body and unmarshal it into a book
+				var patchedBookFromDB models.Book
+				err = json.Unmarshal(response.Body.Bytes(), &patchedBookFromDB)
+				assert.NoError(t, err)
+
+				// Verify that the book in the database matches the expected patched book data
+				assert.Equal(t, tc.ExpectedDBTitle, patchedBookFromDB.Title, "Title mismatch in the database")
+				assert.Equal(t, tc.ExpectedDBAuthor, patchedBookFromDB.Author, "Author mismatch in the database")
+			}
+		})
+	}
+} */
+
+func TestDeleteBookHandler(t *testing.T) {
+	router, db, ctx := tests.SetupMockServer()
+	defer tests.TearDownMockServer(db, ctx)
+
+	// Create a sample book in the database for testing
+	book := api.CreateBookTemplate(t, router)
+
+	// Define test cases for deleting books
+	testCases := []struct {
+		Description      string
+		BookID           uint
+		ExpectedHTTPCode int
+		ShouldBeDeleted  bool
+	}{
+		{
+			Description:      "Delete Existing Book",
+			BookID:           book.ID,
+			ExpectedHTTPCode: http.StatusOK,
+			ShouldBeDeleted:  false,
+		},
+		{
+			Description:      "Delete Invalid Book",
+			BookID:           book.ID + 1, // Use an invalid ID
+			ExpectedHTTPCode: http.StatusNotFound,
+			ShouldBeDeleted:  false, // Invalid book should still not exist
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Description, func(t *testing.T) {
+			response, err := api.SendDeleteBookRequest(router, tc.BookID)
+			assert.NoError(t, err)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
 
 			// Verify the book's existence in the database
-			_, err := core.GetBook(tc.BookID)
-			if tc.ShouldExist {
-				assert.NoError(t, err, "Expected book to exist in the database")
-			} else {
+			response, err = api.SendGetBookRequest(router, tc.BookID)
+			assert.Equal(t, http.StatusNotFound, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
+
+			if tc.ShouldBeDeleted {
 				assert.Error(t, err, "Expected book to be deleted from the database")
+			} else {
+				assert.NoError(t, err, "Expected book to exist in the database")
+
 			}
 		})
 	}
 }
+
+/*
 func TestSearchBookHandler(t *testing.T) {
 	router, db, ctx := tests.SetupMockServer()
 	defer tests.TearDownMockServer(db, ctx)
@@ -373,7 +442,7 @@ func TestSearchBookHandler(t *testing.T) {
 			method := "GET"
 			url := fmt.Sprintf("/books/search?%s", query)
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
@@ -439,7 +508,7 @@ func TestCountBooksHandler(t *testing.T) {
 			method := "GET"
 			url := tc.RequestURL
 			var body []byte = nil
-			response, err := SendRequestV1(router, method, url, body)
+			response, err := api.SendRequestV1(router, method, url, body)
 
 			// Check the response status code
 			assert.Equal(t, tc.ExpectedHTTPCode, response.Code, "Expected status code %d, but got %d", tc.ExpectedHTTPCode, response.Code)
