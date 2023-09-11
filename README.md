@@ -2,7 +2,7 @@
 
 # Library CLI
 
-The Library CLI is a command-line tool that allows you to manage books and collections in a system. It provides commands to create, update, delete, and list books, create and delete collections, and perform various other operations.
+The Library CLI is a command-line tool that allows you to manage books in a system. It provides commands to create, update, delete, list books and perform various other operations.
 
 ## A. Installation
 

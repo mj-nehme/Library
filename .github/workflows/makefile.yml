@@ -43,6 +43,12 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: Run linter
+        run: |
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          cd pkg
+          golangci-lint run 
+
       - name: Build
         working-directory: pkg
         run: make build

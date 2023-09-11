@@ -7,7 +7,7 @@ GOCLEAN=$(GOCMD) clean
 
 # ARGS 
 RUN_ARGS=$(filter-out $@,$(MAKECMDGOALS))
-TEST_ARGS=-v -p 1
+TEST_ARGS=-v -p 1 -race
 
 target: build 
 
