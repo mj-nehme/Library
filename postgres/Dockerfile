@@ -13,9 +13,9 @@ ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 ENV POSTGRES_NAME=$POSTGRES_NAME
 
 # Copy SQL scripts to initialize the database
-COPY init.sql /db/
+COPY init.sql /docker-entrypoint-initdb.d/
 
 # Grant necessary permissions to the SQL script
-RUN chmod +r /db/init.sql
+RUN chmod +r /docker-entrypoint-initdb.d/init.sql
 
 EXPOSE $POSTGRES_PORT
