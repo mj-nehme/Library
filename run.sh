@@ -8,11 +8,11 @@ pwd
 ./run.sh
 popd
 
-sleep 1
-pushd "$path/server"
-pwd
-./run.sh
-popd
+#sleep 1
+#pushd "$path/server"
+#pwd
+#./run.sh
+#popd
 
 #sleep 5
 #pushd "$path/client"
