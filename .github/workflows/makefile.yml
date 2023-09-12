@@ -44,20 +44,20 @@ jobs:
         run: go mod download
 
       - name: Run linter
+        working-directory: server
         run: |
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-          cd pkg
           golangci-lint run 
 
       - name: Build
-        working-directory: pkg
+        working-directory: server
         run: make build
 
       - name: Install gocovmerge
         run: go get -u github.com/wadey/gocovmerge
 
       - name: Run tests
-        working-directory: pkg
+        working-directory: server
         run: make test
         env:
           DB_HOST: localhost
