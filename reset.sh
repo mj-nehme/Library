@@ -1,4 +1,5 @@
 #!/bin/bash
+docker network rm library-net
 docker stop postgres-cr
 docker rm postgres-cr
 #docker stop server-cr
