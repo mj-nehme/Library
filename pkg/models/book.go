@@ -6,6 +6,13 @@ import (
 	"gorm.io/gorm"
 )
 
+//	@Summary		Book represents a book entity.
+//	@Description	This struct defines the properties of a book entity.
+//	@ID				book
+//	@Produce		json
+//	@Success		200	{object}	Book
+//
+// Book represents a book in the library.
 type Book struct {
 	gorm.Model
 	Title       string    `json:"title" binding:"required" validate:"required" gorm:"size:255"`

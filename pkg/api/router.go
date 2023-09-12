@@ -5,6 +5,9 @@ import (
 	"library/db"
 	"net/http"
 
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,6 +40,9 @@ func SetupRouter(db db.Database) *gin.Engine {
 		v1.GET("/books/count", handlers.CountBooks)
 	}
 
+	// Serve Swagger UI
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// Default route for 404 Not Found
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Page Not Found"})
@@ -45,6 +51,13 @@ func SetupRouter(db db.Database) *gin.Engine {
 	return router
 }
 
+//	@Summary		Welcome page
+//	@Description	Welcome page for the Book Management API
+//	@Tags			info
+//	@Produce		json
+//	@Success		200	{object}	gin.H	"Returns a welcome message"
+//	@Router			/ [get]
+//
 // Welcome page handler
 func welcomePageHandler(c *gin.Context) {
 	// You can serve the index.html or any other welcome page here
@@ -53,6 +66,13 @@ func welcomePageHandler(c *gin.Context) {
 	})
 }
 
+//	@Summary		Health check
+//	@Description	Check the status of the Book Management API
+//	@Tags			info
+//	@Produce		json
+//	@Success		200	{object}	gin.H	"Returns the status message"
+//	@Router			/health [get]
+//
 // Health check handler
 func healthCheckHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
