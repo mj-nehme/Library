@@ -21,7 +21,24 @@ EOF
 # Write the SQL commands to the file
 echo "$SQL" >"$POSTGRES_FILE"
 
-docker build --tag $NAME .
-docker run --name "$CONTAINER_NAME" -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" -p "$POSTGRES_PORT":"$POSTGRES_PORT" --ip "$POSTGRES_HOST" --expose "$POSTGRES_PORT" --net "$NET_NAME" -d "$NAME"
+# Build image
+docker build \
+    -q=false \
+    --build-arg POSTGRES_PORT="$POSTGRES_PORT" \
+    --build-arg POSTGRES_USERNAME="$POSTGRES_USERNAME" \
+    --build-arg POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+    --build-arg POSTGRES_NAME="$POSTGRES_NAME" \
+    --tag $NAME .
+
+# Run docker instance
+docker run \
+    --name "$CONTAINER_NAME" \
+    -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+    -p "$POSTGRES_PORT":"$POSTGRES_PORT" \
+    --ip "$POSTGRES_HOST" \
+    --expose "$POSTGRES_PORT" \
+    --net "$NET_NAME" \
+    -d "$NAME"
+
 echo "$CONTAINER_NAME IP:"
 docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_NAME
