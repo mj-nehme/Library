@@ -2,41 +2,23 @@ package config
 
 import (
 	"context"
-	"library/tools"
 
-	"github.com/spf13/viper"
-)
+	"log"
 
-var (
-	configFileName      = "config"
-	configFileExtension = "toml"
+	"github.com/caarlos0/env"
 )
 
 func Load(ctx context.Context) (Config, error) {
-	configFilePath, err := tools.SearchRootDirectory()
-	if err != nil {
-		return Config{}, err
-	}
-	viper.AddConfigPath(configFilePath)
-	viper.SetConfigName(configFileName)
-	viper.SetConfigType(configFileExtension)
+	var dbConfig DatabaseConfig
+	var serverConfig ServerConfig
 
-	viper.AutomaticEnv()
-
-	err = viper.ReadInConfig()
-	if err != nil {
-		return Config{}, err
+	if err := env.Parse(&dbConfig); err != nil {
+		log.Fatal("Error parsing database config:", err)
 	}
 
-	config := Config{}
-	// Unmarshal DatabaseConfig
-	if err = viper.UnmarshalKey("Database", &config.Database); err != nil {
-		return Config{}, err
+	if err := env.Parse(&serverConfig); err != nil {
+		log.Fatal("Error parsing server config:", err)
 	}
 
-	// Unmarshal ServerConfig
-	if err = viper.UnmarshalKey("Server", &config.Server); err != nil {
-		return Config{}, err
-	}
-	return config, nil
+	return Config{Database: dbConfig, Server: serverConfig}, nil
 }

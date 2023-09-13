@@ -60,9 +60,9 @@ jobs:
         working-directory: server
         run: make test
         env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: TestLibrary
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
-          DB_SSL_MODE: disable
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_NAME: TestLibrary
+          POSTGRES_USERNAME: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_SSL_MODE: disable

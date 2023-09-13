@@ -22,7 +22,7 @@ func New() Database {
 
 // InitDB initializes the database connection pool
 func (db *Database) Connect(cfg *config.DatabaseConfig) error {
-	fmt.Println(cfg)
+	slog.Info("Connecting to database %s:%d..", cfg.Host, cfg.Port)
 	connectionString := buildDatabaseConnectionString(cfg)
 	slog.Debug("Connection String:", connectionString)
 
@@ -37,6 +37,7 @@ func (db *Database) Connect(cfg *config.DatabaseConfig) error {
 		log.Fatal(err)
 	}
 
+	slog.Info("Connected to database successfully..")
 	return nil
 }
 

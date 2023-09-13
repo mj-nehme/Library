@@ -3,19 +3,18 @@ docker network create --subnet=172.21.0.0/24 library-net
 path=$(pwd)
 echo "$path"
 
-pushd "$path/postgres"
+pushd "$path/build_postgres" || exit
+pwd
+./build.sh
+popd || return
+
+pushd "$path/postgres" || exit
 pwd
 ./run.sh
-popd
+popd || return
 
-#sleep 1
-#pushd "$path/server"
-#pwd
-#./run.sh
-#popd
-
-#sleep 5
-#pushd "$path/client"
-#pwd
-#./run.sh
-#popd
+sleep 1
+pushd "$path/server" || exit
+pwd
+./run.sh
+popd || return

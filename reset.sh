@@ -3,17 +3,17 @@ docker network rm library-net
 path=$(pwd)
 echo "$path"
 
-pushd "$path/build_postgres"
+pushd "$path/build_postgres" || exit
 pwd
 ./reset.sh
-popd
+popd || return
 
-pushd "$path/postgres"
+pushd "$path/postgres" || exit
 pwd
 ./reset.sh
-popd
+popd || return
 
-#pushd "$path/server"
-#pwd
-#./reset.sh
-#popd
+pushd "$path/server" || exit
+pwd
+./reset.sh
+popd || return

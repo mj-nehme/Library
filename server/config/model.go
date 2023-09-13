@@ -8,16 +8,17 @@ type Config struct {
 
 // DatabaseConfig holds the database configuration settings
 type DatabaseConfig struct {
-	Host     string `mapstructure:"DB_HOST"`
-	Port     int    `mapstructure:"DB_PORT"`
-	Name     string `mapstructure:"DB_NAME"`
-	User     string `mapstructure:"DB_USERNAME"`
-	Password string `mapstructure:"DB_PASSWORD"`
-	SSLMode  string `mapstructure:"DB_SSL_MODE"`
+	Host     string `env:"POSTGRES_HOST"`
+	Port     int    `env:"POSTGRES_PORT"`
+	User     string `env:"POSTGRES_USERNAME"`
+	Password string `env:"POSTGRES_PASSWORD"`
+	Name     string `env:"POSTGRES_NAME"`
+	SSLMode  string `env:"POSTGRES_SSL_MODE"`
 }
 
 // ServerConfig holds the server configuration settings
 type ServerConfig struct {
-	Port int `mapstructure:"SERVER_PORT"`
-	//RootDir string `mapstructure:"ROOT_DIRECTORY"`
+	Host string `env:"SERVER_HOST"`
+	Port int    `env:"SERVER_PORT"`
+	//RootDir string `env:"ROOT_DIRECTORY"`
 }

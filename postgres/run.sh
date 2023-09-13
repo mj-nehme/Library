@@ -2,10 +2,12 @@
 NAME="jaafarn/postgres:v1.1"
 CONTAINER_NAME="postgres-cr"
 NET_NAME=library-net
-CONFIG_FILE="../db.env"
+CONFIG_FILE="../config.env"
 
+set -a
 # shellcheck source=$CONFIG_FILE
 source "$CONFIG_FILE"
+set +a
 
 # pull docker image
 docker image pull "$NAME"
