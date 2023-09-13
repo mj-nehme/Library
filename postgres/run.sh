@@ -1,11 +1,14 @@
 #!/bin/bash
-NAME="jaafarn/postgres:v1.0"
+NAME="jaafarn/postgres:v1.1"
 CONTAINER_NAME="postgres-cr"
 NET_NAME=library-net
 CONFIG_FILE="../db.env"
 
 # shellcheck source=$CONFIG_FILE
 source "$CONFIG_FILE"
+
+# pull docker image
+docker image pull "$NAME"
 
 # Run docker instance
 docker run \
@@ -15,6 +18,7 @@ docker run \
     --ip "$POSTGRES_HOST" \
     --expose "$POSTGRES_PORT" \
     --net "$NET_NAME" \
+    --platform linux/amd64 \
     -d "$NAME"
 
 echo "$CONTAINER_NAME IP:"

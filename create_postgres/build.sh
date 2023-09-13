@@ -1,7 +1,7 @@
 #!/bin/bash
 NAME=postgres
 USERNAME=jaafarn
-VERSION=1.0
+VERSION=v1.1
 NEW_NAME="$USERNAME/$NAME:$VERSION"
 POSTGRES_FILE="./init.sql"
 CONFIG_FILE="../db.env"
@@ -29,6 +29,7 @@ docker build \
     --build-arg POSTGRES_USERNAME="$POSTGRES_USERNAME" \
     --build-arg POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
     --build-arg POSTGRES_NAME="$POSTGRES_NAME" \
+    --platform linux/amd64 \
     --tag $NAME .
 
 docker image tag $NAME $NEW_NAME
