@@ -23,7 +23,7 @@ const (
 	healthCheckPath = "/health"
 	testPort        = 8088
 	contextTimeout  = 10
-	testDatabase    = "TestLibrary"
+	testDatabase    = "Library"
 )
 
 var ServerAddress = ""
@@ -63,23 +63,23 @@ func SetupMockServer() (*gin.Engine, db.Database, context.Context) {
 	port := cfg.Server.Port
 
 	// Start the server
-errChan := make(chan error)
+	errChan := make(chan error)
 
-// Start the server in a goroutine
-go func() {
-    err := api.StartServer(ctx, cfg.Server.Port, router)
-    errChan <- err // Send the error back through the channel
-}()
+	// Start the server in a goroutine
+	go func() {
+		err := api.StartServer(ctx, cfg.Server.Port, router)
+		errChan <- err // Send the error back through the channel
+	}()
 
-// Check for errors
-select {
-case err := <-errChan:
-    if err != nil {
-        slog.Error("Failed to start the server: %v", err)
-    }
-case <-time.After(time.Second * 5): // Timeout after 5 seconds
-    slog.Info("Server started successfully")
-}
+	// Check for errors
+	select {
+	case err := <-errChan:
+		if err != nil {
+			slog.Error("Failed to start the server: %v", err)
+		}
+	case <-time.After(time.Second * 5): // Timeout after 5 seconds
+		slog.Info("Server started successfully")
+	}
 
 	UpdateHostAddress(host, port)
 	cfg.Server.Port = port
@@ -94,11 +94,10 @@ case <-time.After(time.Second * 5): // Timeout after 5 seconds
 
 func TearDownMockServer(db db.Database, ctx context.Context) {
 	// Shut down the server gracefully
-	err:= api.ShutdownServer(ctx)
+	err := api.ShutdownServer(ctx)
 	if err != nil {
 		slog.Error(err.Error())
 	}
-
 
 	err = db.DB.Migrator().DropTable(&models.Book{})
 	if err != nil {
