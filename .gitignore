@@ -1,4 +1,4 @@
-pkg/bin/
+server/bin/
 coverage.*
 .DS_Store
 */.DS_Store

@@ -45,7 +45,7 @@ psql -U <your_username> -d Library -f ./db/create_db.sql
 As simple as
 
 ```
-cd pkg
+cd server
 make build
 ```
 
