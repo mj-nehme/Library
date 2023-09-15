@@ -37,7 +37,7 @@ func UpdateHostAddress(host string, port int) {
 	ServerAddress = host + ":" + strconv.Itoa(port)
 }
 
-func SetupMockServer() (context.Context, *http.Server, *gin.Engine, db.Database) {
+func SetupMockServer() (context.Context, *gin.Engine, db.Database) {
 	// Load config
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(contextTimeout*time.Second))
 	defer cancel()
@@ -65,12 +65,9 @@ func SetupMockServer() (context.Context, *http.Server, *gin.Engine, db.Database)
 
 	// Start the server
 	errChan := make(chan error)
-	serverChan := make(chan *http.Server)
-
 	// Start the server in a goroutine
 	go func() {
-		server, err := api.StartServer(ctx, cfg.Server.Port, router)
-		serverChan <- server
+		err := api.StartServer(ctx, cfg.Server.Port, router)
 		errChan <- err // Send the error back through the channel
 	}()
 
@@ -80,24 +77,24 @@ func SetupMockServer() (context.Context, *http.Server, *gin.Engine, db.Database)
 		if err != nil {
 			slog.Error("Failed to start the server: %v", err)
 		}
-	case server := <-serverChan:
-		UpdateHostAddress(host, port)
-		cfg.Server.Port = port
-
-		// Wait for the server to be ready
-		if err := waitForServerReady(ServerAddress); err != nil {
-			slog.Error(err.Error())
-		}
-
-		return ctx, server, router, db
+	case <-time.After(time.Second * 5): // Timeout after 5 seconds
+		slog.Info("Server started successfully")
 	}
 
-	return nil, nil, nil, db
+	UpdateHostAddress(host, port)
+	cfg.Server.Port = port
+
+	// Wait for the server to be ready
+	if err := waitForServerReady(ServerAddress); err != nil {
+		slog.Error(err.Error())
+	}
+
+	return ctx, router, db
 }
 
-func TearDownMockServer(ctx context.Context, server *http.Server, db db.Database) {
+func TearDownMockServer(ctx context.Context, db db.Database) {
 	// Shut down the server gracefully
-	err := api.ShutdownServer(ctx, server)
+	err := api.ShutdownServer(ctx)
 	if err != nil {
 		slog.Error(err.Error())
 	}

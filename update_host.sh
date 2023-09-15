@@ -1,4 +1,9 @@
 #!/bin/bash
+# This script is used to let the project run on Mac products.
+# Because MacOS doesn't allow by default a connection from the
+# localhost to a container IP using the `bridge` network.
+# In case you're not using MacOS, just ignore it.
+
 CONFIG_FILE="config.env"
 
 if [[ "$1" == "local" || "$1" == "127.0.0.1" || "$1" == "l" ]]; then
