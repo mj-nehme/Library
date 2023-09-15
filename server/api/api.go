@@ -24,11 +24,11 @@ func StartServer(ctx context.Context, port int, router *gin.Engine) error {
 	slog.Info("Starting API server on port.", "port", portSrt)
 
 	mutex.Lock()
-	defer mutex.Unlock()
 	server = &http.Server{
 		Addr:    addr,
 		Handler: router,
 	}
+	mutex.Unlock()
 
 	// Start the server
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {

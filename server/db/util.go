@@ -24,12 +24,15 @@ func SetupTest(t *testing.T) Database {
 	defer cancel()
 	cfg, err := config.Load(ctx)
 	assert.NoError(t, err)
+	assert.NotZero(t, cfg.Database.Port)
+	assert.NotZero(t, cfg.Server.Port)
 
 	// Connect to DB
 	db := New()
 	cfg.Database.Name = tempDatabase
 	err = db.Connect(&cfg.Database)
 	assert.NoError(t, err)
+	time.Sleep(time.Second)
 
 	slog.Info("Setup'ed test successfully..")
 

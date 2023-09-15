@@ -45,9 +45,9 @@ func (db *Database) Connect(cfg *config.DatabaseConfig) error {
 func buildDatabaseConnectionString(cfg *config.DatabaseConfig) string {
 	connectionString := fmt.Sprintf("host=%s port=%d dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Name, cfg.SSLMode)
 
-	if cfg.User != "" {
+	if cfg.Username != "" {
 		// If the user is not provided in the config, assume there is no user authentication
-		connectionString += fmt.Sprintf(" user=%s password=%s", cfg.User, cfg.Password)
+		connectionString += fmt.Sprintf(" user=%s password=%s", cfg.Username, cfg.Password)
 	}
 
 	return connectionString

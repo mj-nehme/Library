@@ -54,6 +54,7 @@ func SetupMockServer() (context.Context, *gin.Engine, db.Database) {
 	if err != nil {
 		slog.Error("Error connecting to Database")
 	}
+	time.Sleep(time.Second)
 
 	// Start the API server
 	router := api.SetupRouter(db)

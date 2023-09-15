@@ -37,6 +37,8 @@ func main() {
 		slog.Error("Error connecting to Database")
 	}
 
+	time.Sleep(time.Second)
+
 	// Start the API server
 	router := api.SetupRouter(db)
 	err = api.StartServer(ctx, cfg.Server.Port, router)
