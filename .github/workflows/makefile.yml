@@ -66,3 +66,5 @@ jobs:
           POSTGRES_USERNAME: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_SSL_MODE: disable
+          SERVER_HOST: localhost
+          SERVER_PORT: 8090
