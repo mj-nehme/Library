@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 // searchRootDirectory returns the root directory of the project.
@@ -18,7 +18,7 @@ func SearchRootDirectory() (string, error) {
 	for {
 		// Check if the go.mod file exists in the current directory.
 		if _, err := os.Stat(filepath.Join(currentDir, "go.mod")); err == nil {
-			slog.Debug("Root Directory: ", currentDir)
+			slog.Debug("Found project root directory.", "Root Directory", currentDir)
 			return currentDir, nil
 		}
 

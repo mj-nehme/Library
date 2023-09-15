@@ -7,7 +7,8 @@ import (
 	"library/models"
 	"log"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -22,9 +23,9 @@ func New() Database {
 
 // InitDB initializes the database connection pool
 func (db *Database) Connect(cfg *config.DatabaseConfig) error {
-	slog.Info("Connecting to database %s:%d..", cfg.Host, cfg.Port)
+	slog.Info("Connecting to database.", "Host", cfg.Host, "Port", cfg.Port)
 	connectionString := buildDatabaseConnectionString(cfg)
-	slog.Debug("Connection String:", connectionString)
+	slog.Debug("Built database connection string.", "Connection String", connectionString)
 
 	var err error
 	db.DB, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
@@ -42,11 +43,11 @@ func (db *Database) Connect(cfg *config.DatabaseConfig) error {
 }
 
 func buildDatabaseConnectionString(cfg *config.DatabaseConfig) string {
-	connectionString := fmt.Sprintf("host=%v port=%d dbname=%v sslmode=%v", cfg.Host, cfg.Port, cfg.Name, cfg.SSLMode)
+	connectionString := fmt.Sprintf("host=%s port=%d dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Name, cfg.SSLMode)
 
 	if cfg.User != "" {
 		// If the user is not provided in the config, assume there is no user authentication
-		connectionString += fmt.Sprintf(" user=%v password=%v", cfg.User, cfg.Password)
+		connectionString += fmt.Sprintf(" user=%s password=%s", cfg.User, cfg.Password)
 	}
 
 	return connectionString

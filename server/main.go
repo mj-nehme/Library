@@ -7,8 +7,9 @@ import (
 	"library/db"
 	"time"
 
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
-	"golang.org/x/exp/slog"
 )
 
 const (
@@ -27,7 +28,7 @@ func main() {
 	if err != nil {
 		slog.Error("Error loading config file")
 	}
-	slog.Info("Configuration: ", cfg)
+	slog.Info("loaded configuration successfully.", "Configuration", cfg)
 
 	// Initialize the database connection
 	db := db.New()

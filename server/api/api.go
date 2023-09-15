@@ -6,14 +6,16 @@ import (
 	"net/http"
 	"strconv"
 
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
-	"golang.org/x/exp/slog"
 )
 
 // StartServer starts the API server with the provided configuration.
 func StartServer(ctx context.Context, port int, router *gin.Engine) (*http.Server, error) {
-	addr := ":" + strconv.Itoa(port)
-	slog.Info("Starting API server on %s...", addr)
+	portSrt := strconv.Itoa(port)
+	addr := ":" + portSrt
+	slog.Info("Starting API server on port.", "port", portSrt)
 
 	server := &http.Server{
 		Addr:    addr,

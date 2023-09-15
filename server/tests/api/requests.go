@@ -7,8 +7,9 @@ import (
 	"net/http/httptest"
 	"strconv"
 
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
-	"golang.org/x/exp/slog"
 )
 
 func SendAddBookRequest(router *gin.Engine, book *models.Book) (*httptest.ResponseRecorder, error) {

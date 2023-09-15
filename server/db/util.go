@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"log/slog"
+
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/exp/slog"
 )
 
 const (
