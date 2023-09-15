@@ -38,8 +38,9 @@ func main() {
 
 	// Start the API server
 	router := api.SetupRouter(db)
-	err = api.StartServer(ctx, cfg.Server.Port, router)
+	server, err := api.StartServer(ctx, cfg.Server.Port, router)
 	if err != nil {
 		slog.Error("Failed to start the API server")
 	}
+	slog.Info("Started server %s...", server.Addr)
 }

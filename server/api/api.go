@@ -10,28 +10,27 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-var server *http.Server = nil
-
 // StartServer starts the API server with the provided configuration.
-func StartServer(ctx context.Context, port int, router *gin.Engine) error {
+func StartServer(ctx context.Context, port int, router *gin.Engine) (*http.Server, error) {
 	addr := ":" + strconv.Itoa(port)
 	slog.Info("Starting API server on %s...", addr)
 
-	server = &http.Server{
+	server := &http.Server{
 		Addr:    addr,
 		Handler: router,
 	}
 
 	// Start the server
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("failed to start the server: %v", err)
+		return nil, fmt.Errorf("failed to start the server: %v", err)
 	}
 
-	return nil
+	return server, nil
 }
 
 // ShutdownServer shuts down the API server gracefully.
-func ShutdownServer(ctx context.Context) error {
+
+func ShutdownServer(ctx context.Context, server *http.Server) error {
 	slog.Info("Shutting down API server gracefully...")
 
 	// Attempt to shutdown the server gracefully

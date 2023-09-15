@@ -12,8 +12,8 @@ import (
 )
 
 func TestHealthCheckHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	method := "GET"
 	url := "/health"
@@ -25,8 +25,8 @@ func TestHealthCheckHandler(t *testing.T) {
 }
 
 func TestVersionHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	testCases := []struct {
 		Version     string
@@ -50,8 +50,8 @@ func TestVersionHandler(t *testing.T) {
 }
 
 func TestWelcomePageHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	// Create a new HTTP request to the root path "/"
 	method := "GET"

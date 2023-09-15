@@ -16,8 +16,8 @@ import (
 )
 
 func TestAddBookHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	// Create a valid book JSON
 	sampleBook, err := api.LoadSampleBook()
@@ -54,8 +54,8 @@ func TestAddBookHandler(t *testing.T) {
 }
 
 func TestGetBookHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	book := api.CreateBookTemplate(t, router)
 
@@ -108,8 +108,8 @@ func TestGetBookHandler(t *testing.T) {
 }
 
 func TestListBooksHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	books := api.CreateListOfBookTemplates(t, router)
 
@@ -141,8 +141,8 @@ func TestListBooksHandler(t *testing.T) {
 }
 
 func TestUpdateBookHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	// Create a sample book in the database for testing
 	book := api.CreateBookTemplate(t, router)
@@ -240,8 +240,8 @@ func TestUpdateBookHandler(t *testing.T) {
 }
 
 func TestPatchBookHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	// Create a sample book in the database for testing
 	book := api.CreateBookTemplate(t, router)
@@ -329,8 +329,8 @@ func TestPatchBookHandler(t *testing.T) {
 }
 
 func TestDeleteBookHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	// Create a sample book in the database for testing
 	book := api.CreateBookTemplate(t, router)
@@ -379,8 +379,8 @@ func TestDeleteBookHandler(t *testing.T) {
 }
 
 func TestSearchBookHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	books := api.CreateListOfBookTemplates(t, router)
 
@@ -456,8 +456,8 @@ func TestSearchBookHandler(t *testing.T) {
 }
 
 func TestCountBooksHandler(t *testing.T) {
-	router, db, ctx := tests.SetupMockServer()
-	defer tests.TearDownMockServer(db, ctx)
+	ctx, server, router, db := tests.SetupMockServer()
+	defer tests.TearDownMockServer(ctx, server, db)
 
 	books := api.CreateListOfBookTemplates(t, router)
 
