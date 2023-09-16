@@ -71,8 +71,6 @@ func loadConfigFile() (config Config, err error) {
 	if err != nil {
 		return
 	}
-	fmt.Println("viper AllKeys:", viper.AllKeys())
-	fmt.Println("viper AllSettings:", viper.AllSettings())
 
 	var databaseConfig DatabaseConfig
 	var serverConfig ServerConfig

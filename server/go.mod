@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-playground/validator/v10 v10.15.3
+	github.com/go-playground/validator/v10 v10.15.4
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
@@ -12,15 +12,18 @@ require (
 	gorm.io/gorm v1.25.4
 )
 
-require github.com/ghodss/yaml v1.0.0 // indirect
+require (
+	github.com/chenzhuoyu/iasm v0.9.0 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.2.0 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
-	github.com/bytedance/sonic v1.9.1 // indirect
+	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/caarlos0/env v3.5.0+incompatible
-	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
+	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -42,7 +45,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
@@ -61,13 +64,13 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/swaggo/files v1.0.1
-	github.com/swaggo/gin-swagger v1.3.2
-	github.com/swaggo/swag v1.7.0 // indirect
+	github.com/swaggo/gin-swagger v1.6.0
+	github.com/swaggo/swag v1.16.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/urfave/cli/v2 v2.25.7 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/arch v0.3.0 // indirect
+	golang.org/x/arch v0.5.0 // indirect
 	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect

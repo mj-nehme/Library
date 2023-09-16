@@ -2,7 +2,6 @@ package api_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"library/models"
 	"library/tests"
 	"library/tests/api"
@@ -419,7 +418,6 @@ func TestSearchBookHandler(t *testing.T) {
 				values.Add(key, value)
 			}
 			query := values.Encode()
-			fmt.Println("Query: ", query)
 
 			response, err := api.SendSearchBooksRequest(router, query)
 			assert.NoError(t, err)

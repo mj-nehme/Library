@@ -15,7 +15,7 @@ func (e ValidationError) Error() string {
 	return fmt.Sprintf("%s: %s", e.Field, e.Err.Error())
 }
 
-func getValidationErrors(err error) []ValidationError {
+func getValidationErrors(err error) string {
 	validationErrors := []ValidationError{}
 
 	for _, fieldErr := range err.(validator.ValidationErrors) {
@@ -25,5 +25,5 @@ func getValidationErrors(err error) []ValidationError {
 		})
 	}
 
-	return validationErrors
+	return fmt.Sprint(validationErrors)
 }
