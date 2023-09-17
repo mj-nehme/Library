@@ -56,7 +56,6 @@ func AddBook(c *gin.Context) {
 //	@Summary		Get a book by ID
 //	@Description	Retrieve a book by its ID
 //	@Tags			books
-//	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int				true	"Book ID"
 //	@Success		200	{object}	models.Book		"Returns the requested book"
@@ -98,12 +97,11 @@ func GetBook(c *gin.Context) {
 
 // @Summary		List books
 // @Description	Retrieve a list of all books
-// @Tags			books
-// @Accept			json
+// @Tags		books
 // @Produce		json
 // @Success		200	{array}		models.Book		"Returns the list of books"
 // @Failure		500	{object}	ErrorResponse	"Failed to retrieve books"
-// @Router			/books [get]
+// @Router		/books [get]
 func ListBooks(c *gin.Context) {
 	var books []models.Book
 	db := c.MustGet("db").(*gorm.DB)
@@ -118,11 +116,11 @@ func ListBooks(c *gin.Context) {
 
 // @Summary		Update a book
 // @Description	Update a book's details
-// @Tags			books
-// @Accept			json
+// @Tags		books
+// @Accept		json
 // @Produce		json
-// @Param			id		path		int				true	"Book ID"
-// @Param			book	body		models.Book		true	"Updated Book details"
+// @Param		id		path		int				true	"Book ID"
+// @Param		book	body		models.Book		true	"Updated Book details"
 // @Success		200		{object}	models.Book		"Returns the updated book"
 // @Failure		400		{object}	ErrorResponse	"Invalid JSON data or validation error"
 // @Failure		404		{object}	ErrorResponse	"Book not found"
@@ -170,16 +168,16 @@ func UpdateBook(c *gin.Context) {
 
 // @Summary		Patch a book
 // @Description	Partially update a book's details
-// @Tags			books
-// @Accept			json
+// @Tags		books
+// @Accept		json
 // @Produce		json
-// @Param			id		path		int				true	"Book ID"
-// @Param			book	body		models.Book		true	"Updated Book details"
+// @Param		id		path		int				true	"Book ID"
+// @Param		book	body		models.Book		true	"Updated Book details"
 // @Success		200		{object}	models.Book		"Returns the updated book"
 // @Failure		400		{object}	ErrorResponse	"Invalid JSON data or validation error"
 // @Failure		404		{object}	ErrorResponse	"Book not found"
 // @Failure		500		{object}	ErrorResponse	"Failed to update book"
-// @Router			/books/{id} [patch]
+// @Router		/books/{id} [patch]
 func PatchBook(c *gin.Context) {
 	var updates map[string]interface{}
 	if err := c.ShouldBindJSON(&updates); err != nil {
@@ -208,15 +206,14 @@ func PatchBook(c *gin.Context) {
 
 // @Summary		Delete a book
 // @Description	Delete a book by its ID
-// @Tags			books
-// @Accept			json
+// @Tags		books
 // @Produce		json
-// @Param			id	path		int				true	"Book ID"
+// @Param		id	path		int				true	"Book ID"
 // @Success		200	{object}	MessageResponse	"Returns a success message"
 // @Failure		400	{object}	ErrorResponse	"Invalid book ID"
 // @Failure		404	{object}	ErrorResponse	"Book not found"
 // @Failure		500	{object}	ErrorResponse	"Failed to delete book"
-// @Router			/books/{id} [delete]
+// @Router		/books/{id} [delete]
 func DeleteBook(c *gin.Context) {
 	// Get the book ID from the URL parameter
 	bookIDStr := c.Param("id")
@@ -247,7 +244,6 @@ func DeleteBook(c *gin.Context) {
 //	@Summary		Search for books
 //	@Description	Search for books based on various criteria
 //	@Tags			books
-//	@Accept			json
 //	@Produce		json
 //	@Param			title		query		string			false	"Title of the book"
 //	@Param			author		query		string			false	"Author of the book"
@@ -261,19 +257,40 @@ func DeleteBook(c *gin.Context) {
 //
 // SearchBooks handles the "GET /books/search" endpoint to search for books.
 func SearchBooks(c *gin.Context) {
-	// Get the query parameters from the URL
-	params := map[string]string{
-		"title":       c.Query("title"),
-		"author":      c.Query("author"),
-		"from":        c.Query("from"),
-		"to":          c.Query("to"),
-		"description": c.Query("description"),
-		"genre":       c.Query("genre"),
+	// Define a struct for query parameters and add validation tags
+	type SearchParams struct {
+		Title       string `form:"title"`
+		Author      string `form:"author"`
+		From        string `form:"from" validate:"omitempty,datetime=2006-01-02"`
+		To          string `form:"to" validate:"omitempty,datetime=2006-01-02"`
+		Description string `form:"description"`
+		Genre       string `form:"genre"`
+	}
+
+	var params SearchParams
+
+	// Bind query parameters to the struct and validate
+	if err := c.ShouldBindQuery(&params); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid query parameters. " + err.Error()})
+		return
+	}
+
+	// Validate the struct
+	if err := validate.Struct(params); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: getValidationErrors(err)})
+		return
 	}
 
 	// Build the search query
 	db := c.MustGet("db").(*gorm.DB)
-	query := buildSearchQuery(db, params)
+	query := buildSearchQuery(db, map[string]string{
+		"title":       params.Title,
+		"author":      params.Author,
+		"from":        params.From,
+		"to":          params.To,
+		"description": params.Description,
+		"genre":       params.Genre,
+	})
 
 	var books []models.Book
 	result := query.Find(&books)
@@ -288,12 +305,11 @@ func SearchBooks(c *gin.Context) {
 
 // @Summary		Count books
 // @Description	Get the total count of books
-// @Tags			books
-// @Accept			json
+// @Tags		books
 // @Produce		json
 // @Success		200	{integer}	int64			"Returns the total count of books"
 // @Failure		500	{object}	ErrorResponse	"Failed to retrieve books count"
-// @Router			/books/count [get]
+// @Router		/books/count [get]
 func CountBooks(c *gin.Context) {
 	var count int64
 	db := c.MustGet("db").(*gorm.DB)

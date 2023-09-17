@@ -36,7 +36,7 @@ const docTemplate = `{
                 "summary": "Welcome page",
                 "responses": {
                     "200": {
-                        "description": "Returns a welcome message",
+                        "description": "Returns the homepage",
                         "schema": {
                             "$ref": "#/definitions/handlers.MessageResponse"
                         }
@@ -47,9 +47,6 @@ const docTemplate = `{
         "/books": {
             "get": {
                 "description": "Retrieve a list of all books",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -123,9 +120,6 @@ const docTemplate = `{
         "/books/count": {
             "get": {
                 "description": "Get the total count of books",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -152,9 +146,6 @@ const docTemplate = `{
         "/books/search": {
             "get": {
                 "description": "Search for books based on various criteria",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -222,9 +213,6 @@ const docTemplate = `{
         "/books/{id}": {
             "get": {
                 "description": "Retrieve a book by its ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -327,9 +315,6 @@ const docTemplate = `{
             },
             "delete": {
                 "description": "Delete a book by its ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -453,18 +438,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
         "handlers.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -490,35 +463,36 @@ const docTemplate = `{
             ],
             "properties": {
                 "author": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
+                    "type": "string",
+                    "description": "Author of the book",
+                    "default": "Mohamad-Jaafar NEHME"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Description of the book",
+                    "default": "A great book on how to implement a book management app in Golang"
                 },
                 "edition": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 1,
+                    "description": "Edition of the book",
+                    "default": 1
                 },
                 "genre_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "description": "Genre of the book",
+                    "default": "Computer Science"
                 },
                 "published": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Published date of the book",
+                    "format": "date-time",
+                    "default": "2023-09-15T10:00:00Z"
                 },
                 "title": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Title of the book",
+                    "default": "How to implement a Library"
                 }
             }
         }

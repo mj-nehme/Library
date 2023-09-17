@@ -14,7 +14,7 @@ import (
 //
 // Book represents a book in the library.
 type Book struct {
-	gorm.Model
+	gorm.Model  `swaggerignore:"true"`
 	Title       string    `json:"title" binding:"required" validate:"required" gorm:"size:255"`
 	Author      string    `json:"author" binding:"required" validate:"required" gorm:"size:255"`
 	Published   time.Time `json:"published" validate:"lte"`

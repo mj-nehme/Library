@@ -32,8 +32,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(db db.Database) *gin.Engine {
+const htmlFiles = "templates/*"
+
+func SetupRouter(db db.Database, initialPath ...string) *gin.Engine {
 	router := gin.Default()
+	relativePath := getRelativePath(initialPath...)
+	router.LoadHTMLGlob(relativePath)
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	router.Use(DBMiddleware(db.DB))
 
@@ -47,9 +51,7 @@ func SetupRouter(db db.Database) *gin.Engine {
 	// API routes for version 1
 	v1 := router.Group("/api/v1")
 	{
-
 		v1.GET("/", healthCheckHandler)
-		v1.GET("/health", healthCheckHandler)
 
 		// Books routes
 		v1.POST("/books", handlers.AddBook)
@@ -65,10 +67,6 @@ func SetupRouter(db db.Database) *gin.Engine {
 	// Serve Swagger UI
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// Optionally, you can also serve the JSON/YAML file directly if needed
-	router.StaticFile("/swagger.json", "./swagger.json")
-	router.StaticFile("/swagger.yaml", "./docs/swagger.yaml")
-
 	// Default route for 404 Not Found
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, handlers.MessageResponse{Message: "Page Not Found"})
@@ -81,15 +79,13 @@ func SetupRouter(db db.Database) *gin.Engine {
 //	@Description	Welcome page for the Book Management API
 //	@Tags			info
 //	@Produce		json
-//	@Success		200	{object}	handlers.MessageResponse	"Returns a welcome message"
+//	@Success		200	{object}	handlers.MessageResponse	"Returns the homepage"
 //	@Router			/ [get]
 //
 // Welcome page handler
 func welcomePageHandler(c *gin.Context) {
-	// You can serve the index.html or any other welcome page here
-	c.JSON(http.StatusOK, handlers.MessageResponse{
-		Message: "Welcome to the Book Management API!",
-	})
+	// Serve the welcome page HTML file
+	c.HTML(http.StatusOK, "welcome.html", nil)
 }
 
 //	@Summary		Health check
@@ -104,4 +100,14 @@ func healthCheckHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, handlers.StatusResponse{
 		Status: "ok",
 	})
+}
+
+func getRelativePath(initialPath ...string) string {
+	var relativePath string
+	if len(initialPath) == 0 {
+		relativePath = htmlFiles
+	} else {
+		relativePath = initialPath[0] + htmlFiles
+	}
+	return relativePath
 }

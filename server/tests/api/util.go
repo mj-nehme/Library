@@ -16,7 +16,7 @@ const (
 	v1Prefix     = apiPath + "/" + apiVersionV1
 )
 
-func SendRequest(router *gin.Engine, method string, path string, requestBody []byte) (*httptest.ResponseRecorder, error) {
+func SendRequest(router *gin.Engine, method string, path string, requestBody []byte, contentType ...string) (*httptest.ResponseRecorder, error) {
 	var body io.Reader
 	if requestBody == nil {
 		body = nil
@@ -29,7 +29,11 @@ func SendRequest(router *gin.Engine, method string, path string, requestBody []b
 	}
 
 	request.Header.Set("Accept-Version", apiVersionV1)
-	request.Header.Set("Content-Type", "application/json")
+	if len(contentType) == 0 {
+		request.Header.Set("Content-Type", "application/json")
+	} else {
+		request.Header.Set("Content-Type", contentType[0])
+	}
 
 	// Create a response recorder to record the response
 	response := httptest.NewRecorder()

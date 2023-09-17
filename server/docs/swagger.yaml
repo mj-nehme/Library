@@ -1,13 +1,5 @@
 basePath: /api/v1
 definitions:
-  gorm.DeletedAt:
-    properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
-    type: object
   handlers.ErrorResponse:
     properties:
       error:
@@ -20,32 +12,31 @@ definitions:
     type: object
   models.Book:
     description: This struct defines the properties of a book entity.
+    type: object
+    required:
+      - author
+      - title
     properties:
       author:
         type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
+        default: "Mohamad-Jaafar NEHME"
       description:
         type: string
+        default: "A great book on how to implement a book management app in Golang"
       edition:
-        minimum: 1
         type: integer
+        minimum: 1
+        default: 1
       genre_name:
         type: string
-      id:
-        type: integer
+        default: "Computer Science"
       published:
         type: string
+        format: date-time
+        default: "2023-09-15T10:00:00Z"
       title:
         type: string
-      updatedAt:
-        type: string
-    required:
-    - author
-    - title
-    type: object
+        default: "How to implement a Library"
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
@@ -70,7 +61,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Returns a welcome message
+          description: Returns the homepage
           schema:
             $ref: '#/definitions/handlers.MessageResponse'
       summary: Welcome page
@@ -78,8 +69,6 @@ paths:
       - info
   /books:
     get:
-      consumes:
-      - application/json
       description: Retrieve a list of all books
       produces:
       - application/json
@@ -128,8 +117,6 @@ paths:
       - books
   /books/{id}:
     delete:
-      consumes:
-      - application/json
       description: Delete a book by its ID
       parameters:
       - description: Book ID
@@ -160,8 +147,6 @@ paths:
       tags:
       - books
     get:
-      consumes:
-      - application/json
       description: Retrieve a book by its ID
       parameters:
       - description: Book ID
@@ -269,8 +254,6 @@ paths:
       - books
   /books/count:
     get:
-      consumes:
-      - application/json
       description: Get the total count of books
       produces:
       - application/json
@@ -288,8 +271,6 @@ paths:
       - books
   /books/search:
     get:
-      consumes:
-      - application/json
       description: Search for books based on various criteria
       parameters:
       - description: Title of the book

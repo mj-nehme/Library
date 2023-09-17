@@ -30,7 +30,7 @@
                 "summary": "Welcome page",
                 "responses": {
                     "200": {
-                        "description": "Returns a welcome message",
+                        "description": "Returns the homepage",
                         "schema": {
                             "$ref": "#/definitions/handlers.MessageResponse"
                         }
@@ -41,9 +41,6 @@
         "/books": {
             "get": {
                 "description": "Retrieve a list of all books",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -117,9 +114,6 @@
         "/books/count": {
             "get": {
                 "description": "Get the total count of books",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -146,9 +140,6 @@
         "/books/search": {
             "get": {
                 "description": "Search for books based on various criteria",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -216,9 +207,6 @@
         "/books/{id}": {
             "get": {
                 "description": "Retrieve a book by its ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -321,9 +309,6 @@
             },
             "delete": {
                 "description": "Delete a book by its ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -447,18 +432,6 @@
         }
     },
     "definitions": {
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
         "handlers.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -484,35 +457,29 @@
             ],
             "properties": {
                 "author": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
+                    "type": "string",
+                    "default": "Mohamad-Jaafar NEHME"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "A great book on how to implement a book management app in Golang"
                 },
                 "edition": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 1,
+                    "default": 1
                 },
                 "genre_name": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "default": "Computer Science"
                 },
                 "published": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "2023-09-15T10:00:00Z"
                 },
                 "title": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "How to implement a Library"
                 }
             }
         }

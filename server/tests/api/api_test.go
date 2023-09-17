@@ -1,7 +1,7 @@
 package api_test
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
 	"library/tests"
 	"library/tests/api"
@@ -57,21 +57,25 @@ func TestWelcomePageHandler(t *testing.T) {
 	method := "GET"
 	url := "/"
 	var body []byte = nil
-	response, err := api.SendRequest(router, method, url, body)
+	contentType := "text/html"
+	response, err := api.SendRequest(router, method, url, body, contentType)
 	assert.NoError(t, err)
 
 	// Check the response status code
 	assert.Equal(t, http.StatusOK, response.Code, "Unexpected status code")
 
 	// Check the Content-Type header
-	assert.Equal(t, "application/json; charset=utf-8", response.Header().Get("Content-Type"), "Unexpected Content-Type")
+	assert.Equal(t, "text/html; charset=utf-8", response.Header().Get("Content-Type"), "Unexpected Content-Type")
 
-	// Read the response body
-	var responseBody map[string]interface{}
-	err = json.NewDecoder(response.Body).Decode(&responseBody)
+	// Read the response body into a buffer
+	var buf bytes.Buffer
+	_, err = buf.ReadFrom(response.Body)
 	assert.NoError(t, err)
+
+	// Convert the buffer to a string
+	responseBody := buf.String()
 
 	// Verify the response body contains the expected message
 	expectedMessage := "Welcome to the Book Management API!"
-	assert.Equal(t, expectedMessage, responseBody["message"], "Unexpected message in response body")
+	assert.Contains(t, responseBody, expectedMessage, "Unexpected message in response body")
 }

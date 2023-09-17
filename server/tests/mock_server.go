@@ -57,7 +57,7 @@ func SetupMockServer() (context.Context, *gin.Engine, db.Database) {
 	time.Sleep(time.Second)
 
 	// Start the API server
-	router := api.SetupRouter(db)
+	router := api.SetupRouter(db, "../../")
 
 	// Choose some arbitrary port for that consecutive tests
 	// might lead to ports in a CLOSE_WAIT status
