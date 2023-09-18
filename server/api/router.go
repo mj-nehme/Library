@@ -23,13 +23,13 @@ package api
 import (
 	"library/api/handlers"
 	"library/db"
-	"library/docs"
 	"net/http"
 
-	swaggerFiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
+	// swagger embed files
+	// gin-swagger middleware
 
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/swag/example/basic/docs"
 )
 
 const htmlFiles = "templates/*"
@@ -65,7 +65,7 @@ func SetupRouter(db db.Database, initialPath ...string) *gin.Engine {
 	}
 
 	// Serve Swagger UI
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.Static("/openapi", "openapi")
 
 	// Default route for 404 Not Found
 	router.NoRoute(func(c *gin.Context) {

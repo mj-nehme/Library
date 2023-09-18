@@ -1,0 +1,563 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "description": "A book management API server.",
+        "title": "Library API Swagger",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Mohamad Jaafar Nehme",
+            "url": "https://www.linkedin.com/in/mjnehme/",
+            "email": "Mohamad.jaafar.nehme@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "2.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8090/api/v1",
+            "description": "Local Development Server"
+        },
+        {
+            "url": "http://staging.example.com/api/v1",
+            "description": "Staging Server"
+        }
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Welcome page for the Book Management API",
+                "responses": {
+                    "200": {
+                        "description": "Returns the homepage",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/books": {
+            "get": {
+                "description": "Retrieve a list of all books",
+                "responses": {
+                    "200": {
+                        "description": "Returns the list of books",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/models.Book"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve books",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new book to the library",
+                "requestBody": {
+                    "description": "New Book details",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/models.Book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns the newly created book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/models.Book"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON data or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "count": {
+                "get": {
+                    "description": "Get the total count of books",
+                    "responses": {
+                        "200": {
+                            "description": "Returns the total count of books",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Failed to retrieve books count",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "search": {
+                "get": {
+                    "description": "Search for books based on various criteria",
+                    "parameters": [
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "description": "Title of the book",
+                            "name": "title",
+                            "in": "query"
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "description": "Author of the book",
+                            "name": "author",
+                            "in": "query"
+                        },
+                        {
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "description": "Published date range start (YYYY-MM-DD)",
+                            "name": "from",
+                            "in": "query"
+                        },
+                        {
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "description": "Published date range end (YYYY-MM-DD)",
+                            "name": "to",
+                            "in": "query"
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "description": "Description of the book",
+                            "name": "description",
+                            "in": "query"
+                        },
+                        {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "description": "Genre of the book",
+                            "name": "genre",
+                            "in": "query"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Returns the list of matching books",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/models.Book"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Failed to fetch books",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/books/{id}": {
+            "get": {
+                "description": "Retrieve a book by its ID",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the requested book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/models.Book"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid book ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a book's details",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "Updated Book details",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/models.Book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/models.Book"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON data or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a book by its ID",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a success message",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid book ID",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Partially update a book's details",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Book ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "Updated Book details",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/models.Book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/models.Book"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON data or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Check the status of the Book Management API",
+                "responses": {
+                    "200": {
+                        "description": "Returns the status message",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/handlers.MessageResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "handlers.ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    }
+                }
+            },
+            "handlers.MessageResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "models.Book": {
+                "description": "This struct defines the properties of a book entity.",
+                "type": "object",
+                "required": [
+                    "author",
+                    "title"
+                ],
+                "properties": {
+                    "author": {
+                        "type": "string",
+                        "default": "Mohamad-Jaafar NEHME"
+                    },
+                    "description": {
+                        "type": "string",
+                        "default": "A great book on how to implement a book management app in Golang"
+                    },
+                    "edition": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "default": 1
+                    },
+                    "genre_name": {
+                        "type": "string",
+                        "default": "Computer Science"
+                    },
+                    "published": {
+                        "type": "string",
+                        "format": "date-time",
+                        "default": "2023-09-15T10:00:00Z"
+                    },
+                    "title": {
+                        "type": "string",
+                        "default": "How to implement a Library"
+                    }
+                }
+            }
+        }
+    },
+    "securitySchemes": {
+        "BasicAuth": {
+            "type": "http",
+            "scheme": "basic"
+        }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://swagger.io/resources/open-api/"
+    }
+}
