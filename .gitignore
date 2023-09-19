@@ -1,5 +1,6 @@
 server/bin/
 coverage.*
+server/coverage.*
 .DS_Store
 */.DS_Store
 build_postgres/
