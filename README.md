@@ -1,5 +1,4 @@
 [![Makefile CI](https://github.com/mj-nehme/library/actions/workflows/makefile.yml/badge.svg)](https://github.com/mj-nehme/library/actions/workflows/makefile.yml)
-
 [![codecov](https://codecov.io/gh/mj-nehme/library/branch/main/graph/badge.svg?token=e4a40627-e198-4dfd-b278-1cb573775e1f)](https://codecov.io/gh/mj-nehme/library)
 
 # Library CLI
