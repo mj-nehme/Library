@@ -53,12 +53,11 @@ jobs:
         working-directory: server
         run: make build
 
-      - name: Install gocovmerge
-        run: go get -u github.com/wadey/gocovmerge
-
       - name: Run tests
         working-directory: server
-        run: make test
+        run: |
+          make test
+          go tool cover -html ./coverage.out -o ./coverage.html
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
@@ -68,3 +67,8 @@ jobs:
           POSTGRES_SSL_MODE: disable
           SERVER_HOST: localhost
           SERVER_PORT: 8090
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
