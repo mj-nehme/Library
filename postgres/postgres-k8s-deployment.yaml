@@ -50,16 +50,6 @@ spec:
                 configMapKeyRef:
                   name: library-config
                   key: POSTGRES_SSL_MODE
-            - name: SERVER_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: library-config
-                  key: SERVER_HOST
-            - name: SERVER_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: library-config
-                  key: SERVER_PORT
           resources:
             limits:
               memory: "256Mi"

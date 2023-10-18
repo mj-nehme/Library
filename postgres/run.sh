@@ -1,5 +1,5 @@
 #!/bin/bash
-NAME="jaafarn/postgres:v1.1"
+NAME="jaafarn/postgres:1.2"
 CONTAINER_NAME="postgres-cr"
 NET_NAME=library-net
 CONFIG_FILE="../config.env"
