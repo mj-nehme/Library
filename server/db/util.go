@@ -13,7 +13,7 @@ import (
 
 const (
 	contextTimeout = 10
-	tempDatabase   = "Library"
+	tempDatabase   = "postgres"
 )
 
 func SetupTest(t *testing.T) Database {

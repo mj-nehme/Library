@@ -24,7 +24,7 @@ const (
 	healthCheckPath = "/health"
 	testPort        = 8088
 	contextTimeout  = 10
-	testDatabase    = "Library"
+	testDatabase    = "postgres"
 )
 
 var ServerAddress = ""
