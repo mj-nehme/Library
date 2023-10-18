@@ -13,9 +13,9 @@ const (
 
 	dbHost    = "localhost"
 	dbPort    = 5432
-	dbName    = "postgres"
 	dbUser    = "postgres"
 	dbPass    = ""
+	dbName    = "postgres"
 	dbSslMode = "disable"
 
 	srvHost = "localhost"
